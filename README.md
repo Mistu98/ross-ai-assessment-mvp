@@ -119,3 +119,9 @@ No deployment is created by this change. A Netlify deploy preview can be configu
 | `.github/workflows/frontend.yml`              | Pull-request build and unit checks                                         |
 | `docs/REVIEW.md`, `docs/VALIDATION.md`        | Review checklist and verification results                                  |
 | `data/`, `knime/`                             | Original source data and KNIME artifacts, unchanged                        |
+
+## Client demonstration
+
+Use the [client walkthrough](docs/CLIENT-DEMO.md) for a 4–5 minute presentation of one synthetic A1 bug-fixing example. The story is activity context → supporting evidence → human judgement → transparent follow-up → reapplication. Method configuration is an optional follow-up topic.
+
+The interface uses black/charcoal navigation and primary actions, a white/neutral workspace, larger form text, and an assessment step strip on the activity, rubric, and recommendation pages. Evidence status colors remain distinct from brand accents and are not risk-severity indicators.

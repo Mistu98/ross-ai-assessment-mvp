@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from "react";
+import { Link } from "react-router-dom";
 import {
   X,
   ArrowUpRight,
@@ -172,5 +173,40 @@ export function SavedNote() {
     <span className="small muted inline-flex items-center gap-1.5">
       <Check size={14} /> Saved in this browser
     </span>
+  );
+}
+
+export function AssessmentJourney({ activityId, current = 1 }) {
+  const suffix = activityId
+    ? `?activity=${encodeURIComponent(activityId)}`
+    : "";
+  const steps = [
+    ["/activities", "Document activity", "Scope and supporting evidence"],
+    ["/rubric", "Assess evidence", "Human judgement and rationale"],
+    [
+      "/recommendations",
+      "Review follow-ups",
+      "Rules and unresolved conditions",
+    ],
+  ];
+  return (
+    <nav className="assessment-journey" aria-label="Assessment steps">
+      <ol>
+        {steps.map(([path, title, description], index) => (
+          <li key={path}>
+            <Link
+              to={`${path}${suffix}`}
+              aria-current={current === index + 1 ? "step" : undefined}
+            >
+              <span className="journey-number">{index + 1}</span>
+              <span>
+                <strong>{title}</strong>
+                <small>{description}</small>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </nav>
   );
 }

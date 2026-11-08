@@ -368,6 +368,10 @@ test("file replacement and evidence descriptions persist after refresh", async (
   await page
     .getByRole("button", { name: "Save evidence", exact: true })
     .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(
+    page.getByText("Updated test artifact", { exact: true }),
+  ).toBeVisible();
   await page.reload();
   await expect(
     page.getByText("Updated test artifact", { exact: true }),
@@ -389,16 +393,14 @@ test("file replacement and evidence descriptions persist after refresh", async (
       await import("node:fs/promises")
     ).readFile(await (await promise).path(), "utf8"),
   ).toBe("Replacement synthetic bytes");
-  await page
-    .getByLabel("Attach supporting files")
-    .setInputFiles({
-      name: "synthetic-screenshot.png",
-      mimeType: "image/png",
-      buffer: Buffer.from(
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZ2kAAAAASUVORK5CYII=",
-        "base64",
-      ),
-    });
+  await page.getByLabel("Attach supporting files").setInputFiles({
+    name: "synthetic-screenshot.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZ2kAAAAASUVORK5CYII=",
+      "base64",
+    ),
+  });
   await page
     .getByRole("button", {
       name: "View evidence synthetic-screenshot.png",

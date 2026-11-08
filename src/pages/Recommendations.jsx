@@ -16,6 +16,7 @@ import { downloadEvidence } from "../lib/storage.js";
 import {
   Badge,
   PageHeading,
+  AssessmentJourney,
   StatusBadge,
   Icon,
   EmptyState,
@@ -49,6 +50,7 @@ export default function Recommendations() {
         title="Recommendation map"
         description="Transparent prompts linked to recorded evidence and unresolved conditions."
       />
+      <AssessmentJourney activityId={activity?.id} current={3} />
       <div className="info-box page-info">
         <GitBranch size={20} />
         <p>

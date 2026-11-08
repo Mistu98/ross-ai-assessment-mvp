@@ -13,6 +13,7 @@ import { useWorkspace } from "../lib/workspace.jsx";
 import { coverage, invalidateReview } from "../lib/method.js";
 import {
   PageHeading,
+  AssessmentJourney,
   SectionHeading,
   StatusBadge,
   CoverageBar,
@@ -44,6 +45,7 @@ export default function Activities() {
           <Plus size={18} /> New activity
         </button>
       </PageHeading>
+      <AssessmentJourney activityId={selected?.id} current={1} />
       <div className="info-box page-info">
         <Info size={19} />
         <p>
