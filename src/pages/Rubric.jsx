@@ -24,6 +24,7 @@ import {
 import {
   Badge,
   PageHeading,
+  AssessmentJourney,
   StatusBadge,
   Icon,
   EmptyState,
@@ -58,6 +59,7 @@ export default function Rubric() {
           <Pencil size={16} /> Edit method
         </Link>
       </PageHeading>
+      <AssessmentJourney activityId={activity?.id} current={2} />
       <div className="warning-banner">
         <Info size={19} />
         <span>
