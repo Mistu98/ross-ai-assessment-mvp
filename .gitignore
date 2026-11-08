@@ -147,3 +147,12 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Assessment frontend: local artifacts and evidence backups
+playwright-report/
+test-results/
+work/
+*.local
+.DS_Store
+assessment-workspace-*.json
+assessment-original-unreadable.json
