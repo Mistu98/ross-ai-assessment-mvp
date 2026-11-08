@@ -121,16 +121,28 @@ export function CoverageBar({ counts, label = true }) {
       <div
         className="coverage-bar"
         role="img"
-        aria-label={`${counts.present} Present, ${counts.partial} Partial, ${counts.absent} Not Evidenced`}
+        aria-label={`${counts.present} Present, ${counts.partial} Partial, ${counts.absent} Not Evidenced, ${counts.outdated || 0} needing reapplication`}
       >
         <i
           className="coverage-present"
-          style={{ width: `${(counts.present / counts.total) * 100}%` }}
+          style={{
+            width: `${counts.total ? (counts.present / counts.total) * 100 : 0}%`,
+          }}
         />
         <i
           className="coverage-partial"
-          style={{ width: `${(counts.partial / counts.total) * 100}%` }}
+          style={{
+            width: `${counts.total ? (counts.partial / counts.total) * 100 : 0}%`,
+          }}
         />
+        {counts.outdated > 0 && (
+          <i
+            className="coverage-outdated"
+            style={{
+              width: `${counts.total ? (counts.outdated / counts.total) * 100 : 0}%`,
+            }}
+          />
+        )}
       </div>
       {label && (
         <span>

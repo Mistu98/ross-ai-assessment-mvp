@@ -28,4 +28,14 @@ For each future revision, record:
 | Reapplication    | Affected activities, preserved export, reassessment decision      |
 | Validation       | Source/adapter, concept mapping, rules, build, test results       |
 
-`0.1-draft` is the browser implementation version, not a validated research release. The UI invents no version history: it displays the current implementation and any version actually supplied in a loaded source. Automated pipeline execution, CSV-to-JSON conversion, a release registry, and longitudinal comparisons remain planned.
+`0.2-draft` is the browser implementation version, not a validated research release. The Method versions tab records actual local definition edits, their revision, summary, and timestamp. Browser changes are not approved research releases. Workspace schema 1 / method 0.1-draft data migrates into the editable schema while retaining original assessments and file bytes. Factor and source snapshots captured with new assessments support later reapplication. Automated pipeline execution, CSV-to-JSON conversion, a release registry, and longitudinal comparisons remain planned.
+
+## Editing and reapplication in the browser
+
+- Rename/describe any of the six stable groupings. Add, edit, move, archive, and restore assessment factors in each grouping. Archiving retains its definition and assessment records.
+- Enter actual literature concepts and explicitly map them to groupings and factors. Archive or restore them without inventing literature content or writing to the repository.
+- Criterion changes increment the factor revision. Changes to a linked concept increment its factor revisions; changes to linked evidence flag its assessments for reapplication.
+- Previously selected human evidence statuses remain stored. Current evidence coverage excludes outdated assessments and displays a separate reapplication count. Rules explain why follow-up is required.
+- New assessments capture their criterion, method revision, and supplied linked source details as a snapshot. Old imports without snapshots say that context is unavailable rather than inventing it.
+- A human review checkpoint requires current records for every active factor and at least one active factor in each grouping. It does not imply safety, deployment approval, or resolved conditions.
+- Save JSON backups before method updates or reassessment if a complete previous workspace is required. Records are editable, not an immutable audit system.

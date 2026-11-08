@@ -1,21 +1,24 @@
 import { useRef, useState } from "react";
+import { useSearchParams, Link } from "react-router-dom";
 import {
   Search,
   Upload,
   FileJson,
-  ArrowRight,
   BookOpen,
   GitBranch,
   Check,
-  Clock3,
   FileSpreadsheet,
   Network,
   Github,
   Info,
   RotateCcw,
+  Plus,
+  Pencil,
+  ArrowRight,
+  Archive,
 } from "lucide-react";
 import { useWorkspace } from "../lib/workspace.jsx";
-import { METHOD } from "../lib/method.js";
+import { METHOD, allFactors } from "../lib/method.js";
 import { parseConcepts } from "../lib/concepts.js";
 import {
   Badge,
@@ -25,24 +28,37 @@ import {
   FormError,
   Modal,
 } from "../components/ui.jsx";
-const tabs = ["Concept library", "Method versions", "Update workflow"];
+import MethodEditor from "../components/MethodEditor.jsx";
+import ConceptEditor from "../components/ConceptEditor.jsx";
+const tabs = [
+  ["groupings", "Groupings & factors"],
+  ["concepts", "Concept library"],
+  ["versions", "Method versions"],
+  ["workflow", "Update workflow"],
+];
 export default function Method() {
   const { workspace, concepts, commit } = useWorkspace(),
-    [tab, setTab] = useState(tabs[0]),
+    [params, setParams] = useSearchParams(),
     [query, setQuery] = useState(""),
     [group, setGroup] = useState("All"),
+    [showArchived, setShowArchived] = useState(false),
     [error, setError] = useState(""),
     [detail, setDetail] = useState(null),
+    [editing, setEditing] = useState(
+      params.get("action") === "new" ? "new" : null,
+    ),
     inputRef = useRef(null);
-  const groups = [
-    ...new Set(concepts.items.map((c) => c.group).filter(Boolean)),
-  ];
+  const tab = tabs.some(([id]) => id === params.get("tab"))
+    ? params.get("tab")
+    : "groupings";
+  const active = concepts.items.filter((c) => !c.archived);
   const filtered = concepts.items.filter(
     (c) =>
+      (showArchived || !c.archived) &&
       `${c.id} ${c.title} ${c.description} ${c.source}`
         .toLowerCase()
         .includes(query.toLowerCase()) &&
-      (group === "All" || c.group === group),
+      (group === "All" || c.groupIds.includes(group)),
   );
   async function importConcepts(event) {
     const file = event.target.files[0];
@@ -52,10 +68,32 @@ export default function Method() {
       if (file.size > 512 * 1024)
         throw new Error("Choose a concept JSON file smaller than 512 KB.");
       const raw = JSON.parse(await file.text());
-      parseConcepts(raw);
+      const parsed = parseConcepts(raw);
+      const ids = parsed.items.map((c) => c.id.toLowerCase());
+      if (new Set(ids).size !== ids.length)
+        throw new Error("Concept IDs must be unique.");
+      // Imports change source definitions: preserve earlier assessments, require linked records to be reapplied.
+      const activities = workspace.activities.map((a) => ({
+        ...a,
+        reviewStatus:
+          a.reviewStatus === "Reviewed" ? "In review" : a.reviewStatus,
+        reviewedBy: "",
+        reviewedAt: null,
+        assessments: Object.fromEntries(
+          Object.entries(a.assessments).map(([id, record]) => [
+            id,
+            record.recorded &&
+            allFactors(workspace.method, true).find((f) => f.id === id)
+              ?.conceptIds.length
+              ? { ...record, needsReapplication: true }
+              : record,
+          ]),
+        ),
+      }));
       commit(
         {
           ...workspace,
+          activities,
           conceptSource: {
             raw,
             name: file.name,
@@ -66,22 +104,36 @@ export default function Method() {
       );
       setError("");
       setGroup("All");
-    } catch (e) {
-      setError(e.message);
+      setParams({ tab: "concepts" });
+    } catch (err) {
+      setError(err.message);
     }
+  }
+  function closeEditor() {
+    setEditing(null);
+    if (params.has("action")) setParams({ tab: "concepts" });
   }
   return (
     <>
       <PageHeading
-        eyebrow="KEEP THE METHOD REPEATABLE"
-        title="Reapplication & method updates"
-        description="Trace the concepts, understand the current method, and document change."
+        eyebrow="YOUR EDITABLE ASSESSMENT METHOD"
+        title="Method & concept editor"
+        description="Manage the six groupings, assessment factors, literature records, and their mappings."
       >
         <button
           className="button button-secondary"
           onClick={() => inputRef.current.click()}
         >
           <Upload size={16} /> Load concept JSON
+        </button>
+        <button
+          className="button button-primary"
+          onClick={() => {
+            setParams({ tab: "concepts" });
+            setEditing("new");
+          }}
+        >
+          <Plus size={17} /> Add concept
         </button>
       </PageHeading>
       <input
@@ -98,12 +150,18 @@ export default function Method() {
           <BookOpen size={23} />
         </span>
         <div>
-          <div className="eyebrow">CURRENT IMPLEMENTATION</div>
+          <div className="eyebrow">
+            EDITABLE WORKING METHOD · REVISION {workspace.method.revision}
+          </div>
           <h2>
-            Assessment method <span>v{METHOD.version}</span>
+            Six groupings.{" "}
+            <span>
+              {allFactors(workspace.method).length} assessment factors.
+            </span>
           </h2>
           <p>
-            Six working groupings · literature mapping awaiting verification
+            {active.length} literature concepts supplied · {METHOD.version} ·
+            saved in this browser
           </p>
         </div>
         <Badge tone="amber" dot>
@@ -111,56 +169,57 @@ export default function Method() {
         </Badge>
       </div>
       <div className="page-tabs" role="tablist" aria-label="Method information">
-        {tabs.map((t) => (
+        {tabs.map(([id, label], index) => (
           <button
-            key={t}
+            key={id}
             role="tab"
-            tabIndex={tab === t ? 0 : -1}
+            tabIndex={tab === id ? 0 : -1}
+            aria-selected={tab === id}
+            id={`tab-${id}`}
+            aria-controls={`panel-${id}`}
+            onClick={() => setParams({ tab: id })}
             onKeyDown={(event) => {
               if (
                 ["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)
               ) {
                 event.preventDefault();
-                const index =
+                const next =
                   event.key === "Home"
                     ? 0
                     : event.key === "End"
                       ? tabs.length - 1
-                      : (tabs.indexOf(t) +
+                      : (index +
                           (event.key === "ArrowRight" ? 1 : -1) +
                           tabs.length) %
                         tabs.length;
-                setTab(tabs[index]);
-                document.getElementById(`tab-${index}`)?.focus();
+                setParams({ tab: tabs[next][0] });
+                document.getElementById(`tab-${tabs[next][0]}`)?.focus();
               }
             }}
-            aria-selected={tab === t}
-            id={`tab-${tabs.indexOf(t)}`}
-            aria-controls={`panel-${tabs.indexOf(t)}`}
-            onClick={() => setTab(t)}
           >
-            {t}
+            {label}
           </button>
         ))}
       </div>
       <section
         role="tabpanel"
-        id={`panel-${tabs.indexOf(tab)}`}
-        aria-labelledby={`tab-${tabs.indexOf(tab)}`}
+        id={`panel-${tab}`}
+        aria-labelledby={`tab-${tab}`}
       >
-        {tab === "Concept library" && (
+        {tab === "groupings" && <MethodEditor />}
+        {tab === "concepts" && (
           <>
             <div className="library-intro">
               <div>
                 <h2>Literature-derived concept library</h2>
                 <p>
-                  Source records retained as supplied. No literature concepts
-                  are generated by this application.
+                  Add your own source records, then explicitly map them to one
+                  or more groupings.
                 </p>
               </div>
               <Badge>
-                {concepts.items.length}{" "}
-                {concepts.items.length === 1 ? "concept" : "concepts"} loaded
+                {active.length} {active.length === 1 ? "concept" : "concepts"}{" "}
+                loaded
               </Badge>
             </div>
             <div
@@ -175,16 +234,36 @@ export default function Method() {
                 </strong>
                 <p>
                   {concepts.state === "loaded"
-                    ? `${workspace.conceptSource ? "Browser import" : "Repository file"} · ${concepts.version ? `Source version ${concepts.version} · ` : ""}${concepts.items.length ? "Concept-to-group mapping needs human verification." : "The concepts array is empty; the 15 literature records and approved mapping are pending."}`
-                    : "The concept source could not be loaded. Check the deployed data/concepts.json file or load a local JSON copy. The project brief identifies 15 concepts; only supplied records are displayed."}
+                    ? `${workspace.conceptSource ? "Browser library override" : "Repository file"} · ${active.length ? "Human-entered definitions and mappings." : "The concepts array is empty. The six working groupings are available in the Groupings & factors tab."}`
+                    : "The concept source could not be loaded. You can create local concept records or load a JSON copy."}
                 </p>
               </div>
               {workspace.conceptSource && (
                 <button
                   className="text-button"
                   onClick={() => {
+                    const activities = workspace.activities.map((a) => ({
+                      ...a,
+                      reviewStatus:
+                        a.reviewStatus === "Reviewed"
+                          ? "In review"
+                          : a.reviewStatus,
+                      reviewedBy: "",
+                      reviewedAt: null,
+                      assessments: Object.fromEntries(
+                        Object.entries(a.assessments).map(([id, r]) => [
+                          id,
+                          r.recorded &&
+                          allFactors(workspace.method, true).find(
+                            (f) => f.id === id,
+                          )?.conceptIds.length
+                            ? { ...r, needsReapplication: true }
+                            : r,
+                        ]),
+                      ),
+                    }));
                     commit(
-                      { ...workspace, conceptSource: null },
+                      { ...workspace, activities, conceptSource: null },
                       "Returned to repository source",
                     );
                     setGroup("All");
@@ -194,111 +273,111 @@ export default function Method() {
                 </button>
               )}
             </div>
-            {concepts.state === "loaded" ? (
-              <>
-                <div className="library-filters">
-                  <label className="search-input">
-                    <Search size={17} />
-                    <input
-                      aria-label="Search concepts"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Search concepts or references…"
-                    />
-                  </label>
-                  <label className="inline-label">
-                    Source grouping
-                    <select
-                      value={group}
-                      onChange={(e) => setGroup(e.target.value)}
-                    >
-                      <option value="All">All source groupings</option>
-                      {groups.map((g) => (
-                        <option key={g}>{g}</option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
-                <div className="concept-grid">
-                  {filtered.map((c, i) => (
+            <div className="library-filters">
+              <label className="search-input">
+                <Search size={17} />
+                <input
+                  aria-label="Search concepts"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search concepts or references…"
+                />
+              </label>
+              <label className="inline-label">
+                Mapped grouping
+                <select
+                  value={group}
+                  onChange={(e) => setGroup(e.target.value)}
+                >
+                  <option value="All">All groupings</option>
+                  {workspace.method.groups.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="toggle-label">
+                <input
+                  type="checkbox"
+                  checked={showArchived}
+                  onChange={(e) => setShowArchived(e.target.checked)}
+                />{" "}
+                Include archived
+              </label>
+            </div>
+            <div className="concept-grid">
+              {filtered.map((c, index) => (
+                <article
+                  className={`card concept-card ${c.archived ? "factor-archived" : ""}`}
+                  key={`${c.id}-${index}`}
+                >
+                  <div>
+                    <Badge tone="green">{c.id}</Badge>
                     <button
-                      className="card concept-card"
-                      key={`${c.id}-${i}`}
+                      className="icon-button"
+                      aria-label={`Edit concept ${c.title}`}
+                      onClick={() => setEditing(c)}
+                    >
+                      <Pencil size={16} />
+                    </button>
+                  </div>
+                  <button className="concept-open" onClick={() => setDetail(c)}>
+                    <h3>{c.title}</h3>
+                    <p>{c.description || "No description supplied."}</p>
+                  </button>
+                  <div className="concept-chips">
+                    {c.groupIds.length ? (
+                      c.groupIds.map((id) => (
+                        <Badge key={id}>
+                          {workspace.method.groups.find((g) => g.id === id)
+                            ?.name || id}
+                        </Badge>
+                      ))
+                    ) : (
+                      <Badge tone="amber">Mapping not supplied</Badge>
+                    )}
+                    {c.archived && <Badge>Archived</Badge>}
+                  </div>
+                  <footer>
+                    <span>
+                      {c.source
+                        ? "Source reference supplied"
+                        : "Reference not supplied"}
+                    </span>
+                    <button
+                      className="text-button"
                       onClick={() => setDetail(c)}
                     >
-                      <div>
-                        <Badge tone="green">{c.id}</Badge>
-                        <span>
-                          <FileJson size={16} />
-                        </span>
-                      </div>
-                      <h3>{c.title}</h3>
-                      <p>
-                        {c.description ||
-                          "No description supplied in this source record."}
-                      </p>
-                      <footer>
-                        <span>{c.group || "Source grouping unspecified"}</span>
-                        <ArrowRight size={16} />
-                      </footer>
+                      Inspect source <ArrowRight size={14} />
                     </button>
-                  ))}
-                </div>
-                {!filtered.length && (
-                  <EmptyState
-                    icon={BookOpen}
-                    title={
-                      concepts.items.length
-                        ? "No matching concepts"
-                        : "Source connected; concepts pending"
-                    }
-                  >
-                    {concepts.items.length ? (
-                      <p>Try a different search or source grouping.</p>
-                    ) : (
-                      <>
-                        <p>
-                          The loaded source contains a valid, empty concepts
-                          array. Add the reviewed literature records to{" "}
-                          <code>data/concepts.json</code> through a pull
-                          request, or load a local JSON copy for inspection.
-                        </p>
-                        <p className="small muted">
-                          The project brief expects 15 concepts. No concepts,
-                          citations, or source mappings have been invented.
-                        </p>
-                      </>
-                    )}
-                  </EmptyState>
-                )}
-              </>
-            ) : (
+                  </footer>
+                </article>
+              ))}
+            </div>
+            {!filtered.length && (
               <div className="card">
                 <EmptyState
                   icon={BookOpen}
                   title={
-                    concepts.state === "loading"
-                      ? "Loading the concept source…"
-                      : "Ready for your literature source"
+                    concepts.items.length
+                      ? "No matching concepts"
+                      : concepts.state === "loaded"
+                        ? "Source connected; concepts pending"
+                        : "Ready for your literature source"
                   }
                 >
                   <p>
-                    Once available, the application reads{" "}
-                    <code>data/concepts.json</code> from the repository. You can
-                    also load a local JSON copy to inspect its concepts.
+                    {concepts.items.length
+                      ? "Adjust your search, grouping, or archived filter."
+                      : "The six draft groupings are visible and editable. Add the actual literature concepts here when ready; no concepts or citations are invented."}
                   </p>
                   <button
                     className="button button-primary"
-                    onClick={() => inputRef.current.click()}
+                    onClick={() => setEditing("new")}
                   >
-                    <Upload size={16} /> Load concept JSON
+                    <Plus size={16} /> Add your first concept
                   </button>
-                  <p className="small muted">
-                    Supported preview shapes: a concept array or{" "}
-                    <code>{'{ "concepts": […] }'}</code>.<br />
-                    The repository uses a concepts array. Entry fields need
-                    verification when the literature records are supplied.
-                  </p>
                   {concepts.error && (
                     <details className="source-error">
                       <summary>Source details</summary>
@@ -308,50 +387,72 @@ export default function Method() {
                 </EmptyState>
               </div>
             )}
+            <p className="method-footnote small muted">
+              <Info size={16} /> The project brief expects 15 literature
+              concepts. Local edits are included in exports and do not modify
+              data/concepts.json.
+            </p>
           </>
         )}
-        {tab === "Method versions" && (
+        {tab === "versions" && (
           <>
             <div className="library-intro">
               <div>
                 <h2>Method version record</h2>
                 <p>
-                  Keep implementation versions separate from validated research
-                  revisions.
+                  Actual local edits are recorded below. Groupings and rules
+                  remain provisional.
                 </p>
               </div>
+              <Badge tone="amber">Implementation draft</Badge>
             </div>
             <div className="card version-card">
               <span className="version-marker">
                 <GitBranch size={20} />
               </span>
               <div>
-                <div className="version-title">
-                  <h3>v{METHOD.version}</h3>
-                  <Badge tone="amber">Implementation draft</Badge>
-                </div>
+                <h3>
+                  {METHOD.version} · local revision {workspace.method.revision}
+                </h3>
                 <p>
-                  Initial browser prototype: activity documentation, six
-                  provisional groupings, explicit recommendation rules, local
-                  persistence, and JSON portability.
+                  Editable factors, concept mappings, evidence records, and a
+                  visible six-group overview. Earlier v0.1 records are migrated
+                  without discarding their evidence.{" "}
+                  {workspace.migratedFrom &&
+                    `This workspace was migrated from ${workspace.migratedFrom}.`}
                 </p>
                 <div className="condition-box">
-                  <strong>Source verification outstanding</strong>
+                  <strong>Human methodology review required</strong>
                   <p>
-                    The repository uses an empty concepts array. The 15
-                    literature records, references, and mapping to the six
-                    higher-level groupings are still pending. This is an
-                    implementation draft awaiting methodology review.
+                    Names and definitions in this browser are working content.
+                    They become approved research content only through your
+                    documented review process.
                   </p>
                 </div>
-                <p className="small muted">
-                  Workspace export records methodVersion:{" "}
-                  {workspace.methodVersion}.{" "}
-                  {concepts.version
-                    ? `Loaded concept source reports version ${concepts.version}.`
-                    : "No source method version has been supplied."}
-                </p>
               </div>
+            </div>
+            <div className="card method-history">
+              <SectionHeading
+                title="Local method change history"
+                subtitle="Most recent changes first; included in workspace exports."
+              />
+              {workspace.method.history.length ? (
+                <ol>
+                  {[...workspace.method.history]
+                    .reverse()
+                    .map((item, index) => (
+                      <li key={`${item.revision}-${index}`}>
+                        <span>Revision {item.revision}</span>
+                        <strong>{item.summary}</strong>
+                        <small>{new Date(item.at).toLocaleString()}</small>
+                      </li>
+                    ))}
+                </ol>
+              ) : (
+                <p className="panel-body muted small">
+                  No local method edits recorded yet.
+                </p>
+              )}
             </div>
             <div className="feature-grid">
               <section className="card feature-card">
@@ -359,26 +460,26 @@ export default function Method() {
                   <Check size={20} /> Implemented in this prototype
                 </h3>
                 <ul>
-                  <li>Responsive navigation and evidence dashboard</li>
-                  <li>Editable profiles and local file attachments</li>
-                  <li>Human evidence assessments and review records</li>
-                  <li>Visible rules and unresolved conditions</li>
-                  <li>Local saving, JSON export, and restore</li>
-                  <li>Concept file loader and source inspection</li>
+                  <li>Editable grouping names and descriptions</li>
+                  <li>Add, edit, archive, and restore assessment factors</li>
+                  <li>Literature concept editing and explicit mappings</li>
+                  <li>
+                    Human assessment, written/file evidence, and reapplication
+                    flags
+                  </li>
+                  <li>
+                    Local saving and JSON backup including method definitions
+                  </li>
                 </ul>
               </section>
               <section className="card feature-card planned">
                 <h3>
-                  <Clock3 size={20} /> Pending / outside this version
+                  <Info size={20} /> Planned integrations
                 </h3>
                 <ul>
-                  <li>
-                    Populate and review the literature records and mapping
-                  </li>
-                  <li>Validate groupings and recommendation rules</li>
-                  <li>Automate Excel → KNIME → GitHub publication</li>
-                  <li>Longitudinal method-version comparisons</li>
-                  <li>Shared storage and team workflows</li>
+                  <li>Automated Excel/KNIME-to-JSON publication</li>
+                  <li>Shared storage and team editing</li>
+                  <li>Reviewed research method releases</li>
                 </ul>
                 <p className="small muted">
                   No MCP, external AI API, authentication, or server database is
@@ -388,14 +489,14 @@ export default function Method() {
             </div>
           </>
         )}
-        {tab === "Update workflow" && (
+        {tab === "workflow" && (
           <>
             <div className="library-intro">
               <div>
                 <h2>Excel → KNIME → GitHub</h2>
                 <p>
-                  A documented, human-reviewed update process. Pipeline
-                  execution is not integrated into this prototype.
+                  A human-reviewed process. The browser does not run the
+                  pipeline.
                 </p>
               </div>
               <Badge tone="amber">Manual workflow</Badge>
@@ -406,25 +507,25 @@ export default function Method() {
                   FileSpreadsheet,
                   "01",
                   "Maintain in Excel",
-                  "Update the literature extraction table. Retain concept IDs, definitions, references, and a change rationale.",
+                  "Record stable concept IDs, definitions, references, consolidation decisions, and change rationale.",
                 ],
                 [
                   Network,
                   "02",
-                  "Transform in KNIME",
-                  "The existing knime/ workflow reads and writes CSV. Review its output, then manually prepare the concepts JSON using the documented source fields.",
+                  "Review KNIME output",
+                  "The retained workflow reads and writes CSV. Review its text analysis and clustering output; manually prepare the reviewed JSON.",
                 ],
                 [
                   Github,
                   "03",
                   "Review in GitHub",
-                  "Update data/concepts.json on a branch. Include source changes and mapping rationale in a pull request; preserve the KNIME workflow.",
+                  "Publish approved concepts and mappings through a pull request. Browser edits remain local until deliberately transferred into reviewed source.",
                 ],
                 [
                   BookOpen,
                   "04",
                   "Reapply the method",
-                  "Build and deploy the reviewed version. Export existing assessments before reapplying changed groupings; document human review.",
+                  "Export the earlier workspace first. Review factors flagged for reapplication and record the human decision.",
                 ],
               ].map(([Component, number, title, description]) => (
                 <div className="card workflow-card" key={number}>
@@ -439,54 +540,34 @@ export default function Method() {
                 </div>
               ))}
             </div>
-            <div className="card workflow-checklist">
-              <SectionHeading
-                title="Before a method update is accepted"
-                subtitle="A practical review record for each change."
-              />
-              <div className="panel-body">
-                <ul>
-                  <li>
-                    Confirm the concept count and schema, stable identifiers,
-                    references, and the six-group mapping.
-                  </li>
-                  <li>
-                    Document additions, removals, definition changes, and their
-                    assessment implications.
-                  </li>
-                  <li>
-                    Review rule changes with the capstone supervisor and
-                    relevant engineering stakeholders.
-                  </li>
-                  <li>
-                    Record the method version, reviewer, date, and reapplication
-                    decision in the pull request.
-                  </li>
-                  <li>
-                    Run the build and tests; deploy from the reviewed commit
-                    after merging.
-                  </li>
-                </ul>
-                <div className="info-box">
-                  <Info size={19} />
-                  <p>
-                    The application does not run Excel or KNIME. It reads the
-                    reviewed JSON file. The repository source is connected;
-                    automated CSV-to-JSON conversion and pipeline execution
-                    remain planned.
-                  </p>
-                </div>
-              </div>
+            <div className="info-box">
+              <Info size={19} />
+              <p>
+                The original data/concepts.json and knime/ folder are preserved.
+                Use workspace JSON exports for local method definitions, concept
+                mappings, assessments, and evidence. Updating source through
+                GitHub is a separate reviewed publication step.
+              </p>
             </div>
           </>
         )}
       </section>
+      {editing && (
+        <ConceptEditor
+          concept={editing === "new" ? null : editing}
+          onClose={closeEditor}
+        />
+      )}
       {detail && (
         <Modal title={detail.title} wide onClose={() => setDetail(null)}>
           <div className="modal-body form-stack">
             <div className="flex flex-wrap gap-2">
               <Badge tone="green">{detail.id}</Badge>
-              {detail.group && <Badge>{detail.group}</Badge>}
+              {detail.groupIds.map((id) => (
+                <Badge key={id}>
+                  {workspace.method.groups.find((g) => g.id === id)?.name || id}
+                </Badge>
+              ))}
             </div>
             <p className="preserve-whitespace">
               {detail.description || "No description supplied."}
@@ -502,10 +583,15 @@ export default function Method() {
               <summary>Original source record</summary>
               <pre>{JSON.stringify(detail.raw, null, 2)}</pre>
             </details>
-            <p className="small muted">
-              Displayed exactly from the loaded source. No assessment status or
-              recommendation is inferred from this record.
-            </p>
+            <button
+              className="button button-primary"
+              onClick={() => {
+                setEditing(detail);
+                setDetail(null);
+              }}
+            >
+              <Pencil size={16} /> Edit concept
+            </button>
           </div>
         </Modal>
       )}

@@ -55,7 +55,7 @@ test("create, document, assess, export, and restore a workspace", async ({
   await page
     .getByRole("button", { name: "Record assessment", exact: true })
     .click();
-  await expect(page.getByText("1/6 groupings recorded")).toBeVisible();
+  await expect(page.getByText("1/6 factors recorded")).toBeVisible();
   await page.reload();
   await expect(
     page.getByLabel("Written evidence & assessment rationale", {
@@ -66,12 +66,12 @@ test("create, document, assess, export, and restore a workspace", async ({
   await expect(page.getByText("5 open conditions")).toBeVisible();
   await page.getByText("How this rule works").first().click();
   await expect(
-    page.getByText("R01: IF status", { exact: false }),
+    page.getByText("R01: IF assessment is not current", { exact: false }),
   ).toBeVisible();
   await page.getByLabel("Open conditions only").check();
   await expect(
     page.getByRole("heading", {
-      name: "Maintain the validation evidence record",
+      name: "Maintain evidence: Validation evidence",
     }),
   ).toHaveCount(0);
   const downloadPromise = page.waitForEvent("download");
@@ -107,7 +107,7 @@ test("create, document, assess, export, and restore a workspace", async ({
 test("concept source is explicit, imported records remain inspectable", async ({
   page,
 }) => {
-  await page.goto("/#/method");
+  await page.goto("/#/method?tab=concepts");
   const response = await page.request.get("/data/concepts.json");
   expect(response.ok()).toBe(true);
   expect(await response.json()).toEqual(
@@ -176,7 +176,7 @@ test("navigation, responsive layout, and human review guard", async ({
     ["Activity profiles", "Activity profiles"],
     ["Assessment rubric", "Assessment rubric"],
     ["Recommendation map", "Recommendation map"],
-    ["Reapplication & updates", "Reapplication & method updates"],
+    ["Method & concepts", "Method & concept editor"],
     ["Dashboard", "Assessment overview"],
   ]) {
     await openNav(page, label);
@@ -197,7 +197,7 @@ test("navigation, responsive layout, and human review guard", async ({
   await page
     .getByRole("button", { name: "Mark reviewed", exact: true })
     .click();
-  await expect(page.getByRole("alert")).toContainText("all six");
+  await expect(page.getByRole("alert")).toContainText("all active factors");
   await page
     .getByRole("button", { name: "Mark in review", exact: true })
     .click();
@@ -228,7 +228,7 @@ test("human review remains separate from completeness and linked files are prote
       .getByRole("button", { name: "Record assessment", exact: true })
       .click();
     await expect(
-      page.getByText(`${index + 1}/6 groupings recorded`),
+      page.getByText(`${index + 1}/6 factors recorded`),
     ).toBeVisible();
   }
   await page.getByRole("button", { name: "Record human review" }).click();
@@ -308,7 +308,7 @@ test("empty and unavailable concept sources are explicit without invented record
   await page.route("**/data/concepts.json", (route) =>
     route.fulfill({ json: { concepts: [] } }),
   );
-  await page.goto("/#/method");
+  await page.goto("/#/method?tab=concepts");
   await expect(
     page.getByRole("heading", { name: "Source connected; concepts pending" }),
   ).toBeVisible();

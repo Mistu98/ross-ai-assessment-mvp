@@ -26,6 +26,7 @@ test("starter activities contain no invented assessment evidence", () => {
       present: 0,
       partial: 0,
       absent: 6,
+      outdated: 0,
       recorded: 0,
       total: 6,
       percent: 0,
@@ -117,6 +118,9 @@ test("JSON round trip preserves written evidence and file bytes", () => {
   workspace.activities[0].evidence.push({
     id: "e1",
     name: "non-confidential.txt",
+    kind: "file",
+    caption: "",
+    updatedAt: null,
     size: 4,
     type: "text/plain",
     dataUrl: "data:text/plain;base64,dGVzdA==",
@@ -145,7 +149,7 @@ test("JSON round trip preserves written evidence and file bytes", () => {
 });
 test("malformed imports and dangling evidence references are rejected", () => {
   assert.throws(
-    () => validateWorkspace({ schemaVersion: 2, activities: [] }),
+    () => validateWorkspace({ schemaVersion: 99, activities: [] }),
     /Unsupported/,
   );
   const workspace = initialWorkspace();
@@ -196,7 +200,7 @@ test("restore rejects a changed method and unrecorded Present statuses", () => {
     () => validateWorkspace(workspace),
     /unsupported method version/,
   );
-  workspace.methodVersion = "0.1-draft";
+  workspace.methodVersion = "0.2-draft";
   workspace.activities[0].assessments.validation = {
     status: "Present",
     rationale: "Test note",
