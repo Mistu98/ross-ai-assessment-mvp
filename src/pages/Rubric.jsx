@@ -8,53 +8,63 @@ import {
   Save,
   ShieldCheck,
   FileText,
+  Pencil,
+  Plus,
 } from "lucide-react";
 import { useWorkspace } from "../lib/workspace.jsx";
 import {
-  GROUPS,
   STATUSES,
   coverage,
   assessActivity,
   reviewActivity,
+  allFactors,
+  blankAssessment,
+  isCurrent,
 } from "../lib/method.js";
 import {
   Badge,
   PageHeading,
-  SectionHeading,
   StatusBadge,
-  CoverageBar,
   Icon,
   EmptyState,
   FormError,
   Modal,
 } from "../components/ui.jsx";
 export default function Rubric() {
-  const { workspace, updateActivity } = useWorkspace(),
+  const { workspace, updateActivity, concepts } = useWorkspace(),
     [params, setParams] = useSearchParams(),
-    [groupId, setGroupId] = useState(
-      GROUPS.some((g) => g.id === params.get("group"))
-        ? params.get("group")
-        : GROUPS[0].id,
-    ),
     [reviewing, setReviewing] = useState(false);
-  const activity =
+  const method = workspace.method,
+    activity =
       workspace.activities.find((a) => a.id === params.get("activity")) ||
       workspace.activities[0],
-    group = GROUPS.find((g) => g.id === groupId);
+    group =
+      method.groups.find((g) => g.id === params.get("group")) ||
+      method.groups[0],
+    factors = group.factors.filter((f) => !f.archived),
+    factor = factors.find((f) => f.id === params.get("factor")) || factors[0];
+  const counts = activity ? coverage(activity, method) : null;
   return (
     <>
       <PageHeading
         eyebrow="STRUCTURE THE HUMAN ASSESSMENT"
         title="Assessment rubric"
-        description="Record what the evidence supports, and what still needs attention."
-      />
+        description="Assess each factor using your written observations, linked evidence, and explicit rationale."
+      >
+        <Link
+          to={`/method?tab=groupings&group=${group.id}`}
+          className="button button-secondary"
+        >
+          <Pencil size={16} /> Edit method
+        </Link>
+      </PageHeading>
       <div className="warning-banner">
         <Info size={19} />
         <span>
-          <strong>Provisional method.</strong> These six working groupings need
-          verification against the original 15 literature concepts.{" "}
-          <Link to="/method">
-            View source status <ArrowRight size={13} />
+          <strong>Provisional method.</strong> These six groupings and their
+          factors are editable working definitions.{" "}
+          <Link to="/method?tab=groupings">
+            Manage groupings & factors <ArrowRight size={13} />
           </Link>
         </span>
       </div>
@@ -65,7 +75,9 @@ export default function Rubric() {
               Activity
               <select
                 value={activity.id}
-                onChange={(e) => setParams({ activity: e.target.value })}
+                onChange={(e) =>
+                  setParams({ activity: e.target.value, group: group.id })
+                }
               >
                 {workspace.activities.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -76,7 +88,12 @@ export default function Rubric() {
             </label>
             <div className="toolbar-status">
               <StatusBadge status={activity.reviewStatus} />
-              <span>{coverage(activity).recorded}/6 groupings recorded</span>
+              <span>
+                {counts.recorded}/{counts.total} factors recorded
+              </span>
+              {counts.outdated > 0 && (
+                <Badge tone="amber">{counts.outdated} need reapplication</Badge>
+              )}
             </div>
             <button
               className="button button-secondary"
@@ -102,44 +119,109 @@ export default function Rubric() {
           </div>
           <div className="rubric-layout">
             <nav className="group-nav" aria-label="Assessment groupings">
-              {GROUPS.map((g, i) => (
-                <button
-                  className={groupId === g.id ? "active" : ""}
-                  key={g.id}
-                  onClick={() => setGroupId(g.id)}
-                >
-                  <span className="group-number">0{i + 1}</span>
-                  <div>
-                    <strong>{g.name}</strong>
-                    <small>
-                      {activity.assessments[g.id].recorded
-                        ? activity.assessments[g.id].status
-                        : "Not yet assessed"}
-                    </small>
-                  </div>
-                  {activity.assessments[g.id].recorded && <Check size={16} />}
-                </button>
-              ))}
+              {method.groups.map((g, index) => {
+                const c = coverage(activity, method, g.id);
+                return (
+                  <button
+                    className={group.id === g.id ? "active" : ""}
+                    key={g.id}
+                    onClick={() =>
+                      setParams({ activity: activity.id, group: g.id })
+                    }
+                  >
+                    <span className="group-number">0{index + 1}</span>
+                    <div>
+                      <strong>{g.name}</strong>
+                      <small>
+                        {c.recorded}/{c.total} factors recorded
+                        {c.outdated ? " · Reapply" : ""}
+                      </small>
+                    </div>
+                    {c.total > 0 && c.recorded === c.total && (
+                      <Check size={16} />
+                    )}
+                  </button>
+                );
+              })}
               <div className="group-nav-note">
                 <Info size={16} />
                 <p>
-                  These are evidence statuses. They do not express risk
-                  severity.
+                  Evidence statuses do not express risk severity. Edited
+                  criteria and evidence require reapplication.
                 </p>
               </div>
             </nav>
             <div>
-              <AssessmentForm
-                key={`${activity.id}-${groupId}-${activity.updatedAt}`}
-                activity={activity}
-                group={group}
-                onSave={(assessment) =>
-                  updateActivity(
-                    assessActivity(activity, group.id, assessment),
-                    "Human assessment recorded",
-                  )
-                }
-              />
+              <div className="factor-picker-heading">
+                <div>
+                  <span className="eyebrow">ASSESSMENT FACTORS</span>
+                  <h2>{group.name}</h2>
+                </div>
+                <Link
+                  to={`/method?tab=groupings&group=${group.id}`}
+                  className="text-link"
+                >
+                  <Plus size={15} /> Manage factors
+                </Link>
+              </div>
+              <div
+                className="factor-picker"
+                aria-label="Factors in this grouping"
+              >
+                {factors.map((f) => (
+                  <button
+                    className={factor?.id === f.id ? "active" : ""}
+                    key={f.id}
+                    onClick={() =>
+                      setParams({
+                        activity: activity.id,
+                        group: group.id,
+                        factor: f.id,
+                      })
+                    }
+                  >
+                    <strong>{f.name}</strong>
+                    <span>
+                      {isCurrent(activity.assessments[f.id], f)
+                        ? activity.assessments[f.id].status
+                        : activity.assessments[f.id]?.recorded
+                          ? "Reapplication needed"
+                          : "Not yet assessed"}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              {factor ? (
+                <AssessmentForm
+                  key={`${activity.id}-${factor.id}-${activity.updatedAt}-${factor.revision}`}
+                  activity={activity}
+                  group={group}
+                  factor={factor}
+                  onSave={(assessment) =>
+                    updateActivity(
+                      assessActivity(
+                        activity,
+                        factor.id,
+                        assessment,
+                        method,
+                        concepts.items,
+                      ),
+                      "Human assessment recorded",
+                    )
+                  }
+                />
+              ) : (
+                <div className="card">
+                  <EmptyState title="No active factors in this grouping">
+                    <Link
+                      to={`/method?tab=groupings&group=${group.id}`}
+                      className="button button-primary"
+                    >
+                      Add an assessment factor
+                    </Link>
+                  </EmptyState>
+                </div>
+              )}
               <div className="assessment-links">
                 <Link
                   to={`/activities?activity=${activity.id}`}
@@ -164,8 +246,8 @@ export default function Rubric() {
                 {activity.reviewedAt
                   ? ` on ${new Date(activity.reviewedAt).toLocaleDateString()}`
                   : ""}
-                . A review records a human checkpoint; it does not certify the
-                activity as safe or resolve its open conditions.
+                . A human checkpoint does not certify safety or resolve open
+                conditions.
               </p>
             </div>
           )}
@@ -186,13 +268,20 @@ export default function Rubric() {
     </>
   );
 }
-function AssessmentForm({ activity, group, onSave }) {
-  const initial = activity.assessments[group.id],
+function AssessmentForm({ activity, group, factor, onSave }) {
+  const { concepts } = useWorkspace(),
+    initial =
+      activity.assessments[factor.id] || blankAssessment(factor.revision),
     [status, setStatus] = useState(initial.status),
     [rationale, setRationale] = useState(initial.rationale),
     [condition, setCondition] = useState(initial.condition),
+    [assessor, setAssessor] = useState(initial.assessor || ""),
     [evidenceIds, setEvidenceIds] = useState(initial.evidenceIds),
     [error, setError] = useState("");
+  const outdated = initial.recorded && !isCurrent(initial, factor),
+    linkedConcepts = factor.conceptIds
+      .map((id) => concepts.items.find((c) => c.id === id))
+      .filter(Boolean);
   return (
     <section className="card">
       <div className="rubric-group-header">
@@ -201,9 +290,9 @@ function AssessmentForm({ activity, group, onSave }) {
         </span>
         <div>
           <div className="eyebrow">
-            WORKING GROUPING 0{GROUPS.indexOf(group) + 1}
+            {factor.rule} · FACTOR REVISION {factor.revision}
           </div>
-          <h2>{group.name}</h2>
+          <h2>{factor.name}</h2>
         </div>
         <Badge tone="amber">Draft</Badge>
       </div>
@@ -212,14 +301,56 @@ function AssessmentForm({ activity, group, onSave }) {
         onSubmit={(event) => {
           event.preventDefault();
           try {
-            onSave({ status, rationale, condition, evidenceIds });
+            onSave({ status, rationale, condition, evidenceIds, assessor });
             setError("");
-          } catch (e) {
-            setError(e.message);
+          } catch (err) {
+            setError(err.message);
           }
         }}
       >
-        <p className="assessment-prompt">{group.prompt}</p>
+        {outdated && (
+          <div className="warning-banner">
+            <Info size={18} />
+            <span>
+              <strong>Reapplication needed.</strong> The earlier assessment is
+              preserved below. Review the changed criteria or evidence and
+              record your judgement again.
+            </span>
+          </div>
+        )}
+        <p className="assessment-prompt">{factor.question}</p>
+        {outdated && (
+          <details className="rule-details">
+            <summary>Earlier criterion and source context</summary>
+            <div>
+              <p>
+                {initial.factorSnapshot?.question ||
+                  "An earlier criterion snapshot is not available in this imported record."}
+              </p>
+              {initial.factorSnapshot?.concepts.map((c) => (
+                <p key={c.id}>
+                  {c.id} · {c.title} · {c.source || "Reference not supplied"}
+                </p>
+              ))}
+            </div>
+          </details>
+        )}
+        {linkedConcepts.length > 0 && (
+          <div className="linked-concepts">
+            <span className="field-caption">
+              LINKED LITERATURE CONCEPTS · HUMAN MAPPING
+            </span>
+            {linkedConcepts.map((c) => (
+              <div key={c.id}>
+                <strong>
+                  {c.id} · {c.title}
+                  {c.archived ? " (archived)" : ""}
+                </strong>
+                <p>{c.source || "Source reference not supplied."}</p>
+              </div>
+            ))}
+          </div>
+        )}
         <fieldset>
           <legend>Evidence status</legend>
           <div className="status-options">
@@ -245,16 +376,16 @@ function AssessmentForm({ activity, group, onSave }) {
             maxLength={20000}
             value={rationale}
             onChange={(e) => setRationale(e.target.value)}
-            placeholder="Describe the supporting observations, limitations, and why this status is justified. Written observations can be evidence; file attachment is optional."
+            placeholder="Describe the observations, supporting evidence, limitations, and why this status is justified."
           />
           <span className="field-hint">
-            An attachment alone does not establish a status. Explain the human
-            judgement.
+            Files are supporting evidence. Explain the human judgement rather
+            than relying on an attachment alone.
           </span>
         </label>
         <fieldset>
           <legend>
-            Link supporting files{" "}
+            Link supporting evidence{" "}
             <span className="optional-label">Optional</span>
           </legend>
           {activity.evidence.length ? (
@@ -273,17 +404,20 @@ function AssessmentForm({ activity, group, onSave }) {
                     }
                   />
                   <FileText size={16} />
-                  <span>{e.name}</span>
+                  <span>
+                    {e.name}
+                    {e.kind === "note" ? " · Written evidence" : ""}
+                  </span>
                 </label>
               ))}
             </div>
           ) : (
             <p className="field-empty">
-              No files attached.{" "}
+              No evidence records attached.{" "}
               <Link to={`/activities?activity=${activity.id}`}>
-                Add supporting evidence
-              </Link>{" "}
-              or record written observations above.
+                Add files or written evidence
+              </Link>
+              , or record observations above.
             </p>
           )}
         </fieldset>
@@ -302,14 +436,23 @@ function AssessmentForm({ activity, group, onSave }) {
             placeholder="What needs to be checked, controlled, or clarified?"
           />
         </label>
+        <label>
+          Assessor name or role <span className="optional-label">Optional</span>
+          <input
+            maxLength={200}
+            value={assessor}
+            onChange={(e) => setAssessor(e.target.value)}
+            placeholder="Who is recording this judgement?"
+          />
+        </label>
         <FormError>{error}</FormError>
         <div className="form-footer">
           <span className="small muted">
             {initial.recorded
-              ? "Human assessment recorded"
+              ? "Earlier human assessment retained"
               : "No human assessment recorded yet"}
           </span>
-          <button type="submit" className="button button-primary">
+          <button className="button button-primary">
             <Save size={16} /> Record assessment
           </button>
         </div>
@@ -318,7 +461,7 @@ function AssessmentForm({ activity, group, onSave }) {
   );
 }
 function HumanReview({ activity, onClose }) {
-  const { updateActivity } = useWorkspace(),
+  const { workspace, updateActivity, concepts } = useWorkspace(),
     [reviewer, setReviewer] = useState(activity.reviewedBy),
     [error, setError] = useState("");
   return (
@@ -329,34 +472,35 @@ function HumanReview({ activity, onClose }) {
           event.preventDefault();
           try {
             updateActivity(
-              reviewActivity(activity, reviewer),
+              reviewActivity(activity, reviewer, workspace.method),
               "Human review recorded",
             );
             onClose();
-          } catch (e) {
-            setError(e.message);
+          } catch (err) {
+            setError(err.message);
           }
         }}
       >
         <p>
-          Review the six evidence records and their unresolved conditions before
-          recording this checkpoint. All six groupings need a recorded
-          assessment; they do not all need to be Present.
+          Review all {allFactors(workspace.method).length} active factor records
+          across the six groupings and their unresolved conditions. Records
+          needing reapplication must be assessed again; statuses do not all need
+          to be Present.
         </p>
         <div className="info-box">
           <Info size={19} />
           <p>
-            “Reviewed” is a human workflow state. It does not mean an activity
-            is safe, approved for deployment, or free of unresolved conditions.
+            Reviewed is a human workflow checkpoint. It does not mean safe,
+            approved for deployment, or free of unresolved conditions.
           </p>
         </div>
         <label>
           Reviewer name or role
           <input
             required
+            maxLength={200}
             value={reviewer}
             onChange={(e) => setReviewer(e.target.value)}
-            maxLength={200}
             placeholder="Who reviewed this activity?"
           />
         </label>
@@ -381,7 +525,7 @@ function HumanReview({ activity, onClose }) {
           >
             Mark in review
           </button>
-          <button className="button button-primary" type="submit">
+          <button className="button button-primary">
             <CheckCheck size={16} /> Mark reviewed
           </button>
         </div>

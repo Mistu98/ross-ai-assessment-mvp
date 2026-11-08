@@ -25,10 +25,15 @@ export function parseConcepts(raw) {
       description: printable(row.description ?? row.definition),
       group: printable(row.grouping ?? row.group ?? row.category),
       source: printable(row.source ?? row.reference ?? row.citation),
+      groupIds: Array.isArray(row.groupingIds)
+        ? row.groupingIds.filter((id) => typeof id === "string")
+        : [],
+      archived: Boolean(row.archived),
       raw: row,
     };
   });
   return {
+    raw,
     items,
     version: typeof raw?.version === "string" ? raw.version : null,
   };

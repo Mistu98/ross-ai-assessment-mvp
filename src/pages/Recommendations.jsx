@@ -28,14 +28,14 @@ const categories = [
   "Human oversight",
 ];
 export default function Recommendations() {
-  const { workspace } = useWorkspace(),
+  const { workspace, concepts } = useWorkspace(),
     [params, setParams] = useSearchParams(),
     [category, setCategory] = useState("All"),
     [openOnly, setOpenOnly] = useState(false);
   const activity =
     workspace.activities.find((a) => a.id === params.get("activity")) ||
     workspace.activities[0];
-  const rules = activity ? recommendations(activity) : [],
+  const rules = activity ? recommendations(activity, workspace.method) : [],
     open = rules.filter((r) => r.unresolved).length;
   const filtered = rules.filter(
     (r) =>
@@ -127,7 +127,7 @@ export default function Recommendations() {
                     <h2>
                       {rule.unresolved
                         ? rule.action
-                        : `Maintain the ${rule.short.toLowerCase()} evidence record`}
+                        : `Maintain evidence: ${rule.name}`}
                     </h2>
                   </div>
                   <Badge tone={rule.unresolved ? "amber" : "green"} dot>
@@ -136,6 +136,26 @@ export default function Recommendations() {
                 </div>
                 <div className="recommendation-content">
                   <p>{rule.guidance}</p>
+                  <p className="small muted">
+                    Grouping: {rule.groupName} · Factor: {rule.name}
+                  </p>
+                  {rule.outdated && (
+                    <div className="warning-banner">
+                      Reapplication needed: the earlier status is retained as a
+                      historical judgement.
+                    </div>
+                  )}
+                  {rule.conceptIds.length > 0 && (
+                    <div className="concept-chips">
+                      {rule.conceptIds.map((id) => (
+                        <Badge key={id}>
+                          {id} ·{" "}
+                          {concepts.items.find((c) => c.id === id)?.title ||
+                            "Source record unavailable"}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                   <div className="rule-evidence">
                     <div>
                       <span className="field-caption">
@@ -177,9 +197,9 @@ export default function Recommendations() {
                     <summary>How this rule works</summary>
                     <div>
                       <code>
-                        {rule.rule}: IF status ≠ Present OR unresolved condition
-                        is non-empty → follow-up required. ELSE → maintain
-                        documented evidence.
+                        {rule.rule}: IF assessment is not current OR status ≠
+                        Present OR unresolved condition is non-empty → follow-up
+                        required. ELSE → maintain documented evidence.
                       </code>
                       <p>
                         Input: {activity.code} → {rule.name}. Evidence status is
@@ -189,9 +209,12 @@ export default function Recommendations() {
                     </div>
                   </details>
                   <div className="recommendation-footer">
-                    <span>Provisional rule · v0.1-draft</span>
+                    <span>
+                      Provisional rule · method revision{" "}
+                      {workspace.method.revision}
+                    </span>
                     <Link
-                      to={`/rubric?activity=${activity.id}&group=${rule.id}`}
+                      to={`/rubric?activity=${activity.id}&group=${rule.groupId}&factor=${rule.id}`}
                       className="text-link"
                     >
                       Review evidence record <ArrowRight size={15} />

@@ -1,148 +1,81 @@
 import { Link } from "react-router-dom";
 import {
-  ArrowRight,
-  ArrowUpRight,
   Plus,
   Download,
   FolderOpen,
   FileCheck2,
   ClipboardList,
   ShieldCheck,
-  Check,
-  CircleDashed,
-  Sparkles,
-  ChevronRight,
+  ArrowRight,
+  ArrowUpRight,
+  Pencil,
   BookOpen,
-  CheckCheck,
+  ChevronRight,
+  Info,
 } from "lucide-react";
 import { useWorkspace } from "../lib/workspace.jsx";
-import { GROUPS, coverage } from "../lib/method.js";
+import { allFactors, coverage, recommendations } from "../lib/method.js";
 import {
   Badge,
   PageHeading,
   SectionHeading,
   StatusBadge,
   CoverageBar,
+  Icon,
   EmptyState,
 } from "../components/ui.jsx";
 export default function Dashboard() {
-  const { workspace, concepts, createActivity, exportData } = useWorkspace();
-  const activities = workspace.activities,
-    total = activities.length * GROUPS.length;
+  const { workspace, concepts, createActivity, exportData } = useWorkspace(),
+    method = workspace.method,
+    activities = workspace.activities,
+    factors = allFactors(method),
+    total = activities.length * factors.length;
   const counts = activities.reduce(
     (sum, a) => {
-      const c = coverage(a);
+      const c = coverage(a, method);
       return {
         present: sum.present + c.present,
         partial: sum.partial + c.partial,
         absent: sum.absent + c.absent,
+        outdated: sum.outdated + c.outdated,
       };
     },
-    { present: 0, partial: 0, absent: 0 },
+    { present: 0, partial: 0, absent: 0, outdated: 0 },
   );
   const open = activities.reduce(
-    (sum, a) =>
-      sum +
-      GROUPS.filter(
-        (g) =>
-          a.assessments[g.id].status !== "Present" ||
-          a.assessments[g.id].condition.trim(),
-      ).length,
-    0,
-  );
-  const reviewed = activities.filter(
-    (a) => a.reviewStatus === "Reviewed",
-  ).length;
-  const percent = total ? Math.round((counts.present / total) * 100) : 0;
+      (sum, a) =>
+        sum + recommendations(a, method).filter((r) => r.unresolved).length,
+      0,
+    ),
+    reviewed = activities.filter((a) => a.reviewStatus === "Reviewed").length,
+    percent = total ? Math.round((counts.present / total) * 100) : 0,
+    activeConcepts = concepts.items.filter((c) => !c.archived);
   return (
     <>
       <PageHeading
-        eyebrow="YOUR ASSESSMENT WORKSPACE"
+        eyebrow="YOUR EDITABLE ASSESSMENT WORKSPACE"
         title="Assessment overview"
-        description="A clear view of your activities, evidence, and next steps."
+        description="See the six groupings, shape your method, and review the supporting evidence."
       >
         <button className="button button-secondary" onClick={exportData}>
-          <Download size={16} /> Export assessment
+          <Download size={17} /> Export workspace
         </button>
         <button className="button button-primary" onClick={createActivity}>
           <Plus size={18} /> New activity
         </button>
       </PageHeading>
-      <div className="intro-grid">
-        <section className="hero-card">
-          <div className="hero-pattern" aria-hidden="true">
-            <div />
-            <div />
-            <div />
-          </div>
-          <div className="hero-eyebrow">
-            <span className="hero-spark">
-              <ShieldCheck size={15} />
-            </span>{" "}
-            EVIDENCE-BASED. HUMAN-LED.
-          </div>
-          <h2>
-            Confidence starts
-            <br />
-            with clear evidence.
-          </h2>
-          <p>
-            Document AI-assisted work. Assess the evidence.
-            <br className="desktop-only" /> Make informed, traceable engineering
-            decisions.
-          </p>
-          <Link to="/rubric" className="hero-link">
-            Open assessment rubric <ArrowUpRight size={17} />
-          </Link>
-          <div className="hero-steps">
-            <span>
-              <i>01</i> Document
-            </span>
-            <b />
-            <span>
-              <i>02</i> Assess
-            </span>
-            <b />
-            <span>
-              <i>03</i> Review
-            </span>
-          </div>
-        </section>
-        <section className="method-glance card">
-          <div className="section-label">
-            <BookOpen size={16} /> THE METHOD AT A GLANCE
-          </div>
-          <h3>
-            One repeatable process.
-            <br />A transparent assessment.
-          </h3>
-          <div className="method-numbers">
-            <div>
-              <strong>06</strong>
-              <span>Working groupings</span>
-            </div>
-            <span className="vertical-line" />
-            <div>
-              <strong>
-                {concepts.items.length.toString().padStart(2, "0")}
-              </strong>
-              <span>Concepts loaded</span>
-            </div>
-          </div>
-          <div className="method-source">
-            <span className="status-dot amber-dot" />
-            <span>
-              {concepts.state === "loaded"
-                ? concepts.items.length
-                  ? "Source loaded · mapping needs review"
-                  : "Source connected · concepts pending"
-                : "Literature source pending · 15 expected"}
-            </span>
-          </div>
-          <Link to="/method" className="text-link">
-            Explore method & concepts <ArrowRight size={15} />
-          </Link>
-        </section>
+      <div className="workspace-summary-strip">
+        <div>
+          <span className="live-dot" />
+          <strong>Human-led · evidence-based</strong>
+          <span>
+            Method revision {method.revision} · {factors.length} active factors
+            · {activeConcepts.length} literature concepts
+          </span>
+        </div>
+        <Link to="/method?tab=groupings" className="text-link">
+          Edit your method <Pencil size={15} />
+        </Link>
       </div>
       <div className="metrics-grid">
         {[
@@ -150,48 +83,146 @@ export default function Dashboard() {
             FolderOpen,
             "Activity profiles",
             activities.length.toString().padStart(2, "0"),
-            "Documented engineering activities",
+            "Editable engineering activities",
             "sage",
           ],
           [
             FileCheck2,
             "Evidence coverage",
             `${percent}%`,
-            `${counts.present} of ${total} grouping records Present`,
+            `${counts.present} of ${total} factors have Present evidence`,
             "blue",
           ],
           [
             ClipboardList,
             "Open conditions",
             open.toString().padStart(2, "0"),
-            "Evidence gaps or unresolved conditions",
+            `${counts.outdated} records need reapplication`,
             "amber",
           ],
           [
             ShieldCheck,
             "Reviewed activities",
             reviewed.toString().padStart(2, "0"),
-            "Explicitly marked by a human reviewer",
+            "Explicit human review checkpoints",
             "violet",
           ],
-        ].map(([Component, label, value, text, tone]) => (
+        ].map(([Component, label, value, description, tone]) => (
           <div className="metric-card card" key={label}>
             <div className="metric-top">
               <span>{label}</span>
               <span className={`metric-icon ${tone}`}>
-                <Component size={19} strokeWidth={1.7} />
+                <Component size={19} />
               </span>
             </div>
             <strong className="metric-value">{value}</strong>
-            <small>{text}</small>
+            <small>{description}</small>
           </div>
         ))}
+      </div>
+      <section className="dashboard-groupings">
+        <SectionHeading
+          title="The six assessment groupings"
+          subtitle="Working labels are provisional. Open a grouping to edit its factors, questions, and controls."
+        >
+          <Link to="/method?tab=groupings" className="text-link">
+            Manage all factors <ArrowRight size={16} />
+          </Link>
+        </SectionHeading>
+        <div className="group-overview-grid">
+          {method.groups.map((group, index) => {
+            const active = group.factors.filter((f) => !f.archived),
+              mapped = activeConcepts.filter((c) =>
+                c.groupIds.includes(group.id),
+              ),
+              present = activities.reduce(
+                (sum, a) => sum + coverage(a, method, group.id).present,
+                0,
+              );
+            return (
+              <article
+                className={`card overview-group group-overview-${index}`}
+                key={group.id}
+              >
+                <div className="overview-group-top">
+                  <span className={`step-icon group-tone-${index}`}>
+                    <Icon name={group.icon} size={22} />
+                  </span>
+                  <span className="eyebrow">GROUPING 0{index + 1}</span>
+                  <Badge tone="amber">Draft</Badge>
+                </div>
+                <h2>{group.name}</h2>
+                <p>{group.prompt}</p>
+                <div className="overview-factor-preview">
+                  {active.slice(0, 2).map((f) => (
+                    <span key={f.id}>
+                      <i />
+                      {f.name}
+                    </span>
+                  ))}
+                  {active.length > 2 && (
+                    <small>+{active.length - 2} more factors</small>
+                  )}
+                  {!active.length && <span>No active factors yet</span>}
+                </div>
+                <div className="overview-group-meta">
+                  <span>
+                    {active.length} {active.length === 1 ? "factor" : "factors"}{" "}
+                    · {mapped.length} mapped concepts
+                  </span>
+                  <span>{present} Present</span>
+                </div>
+                <div className="overview-group-actions">
+                  <Link
+                    to={`/method?tab=groupings&group=${group.id}`}
+                    className="text-link"
+                  >
+                    <Pencil size={14} /> Edit grouping
+                  </Link>
+                  <Link
+                    to={
+                      activities[0]
+                        ? `/rubric?activity=${activities[0].id}&group=${group.id}`
+                        : "/activities"
+                    }
+                    className="text-link"
+                  >
+                    Assess evidence <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+      <div className="concept-callout">
+        <span className="step-icon sage">
+          <BookOpen size={22} />
+        </span>
+        <div>
+          <strong>
+            {activeConcepts.length
+              ? `${activeConcepts.length} literature concepts in your library`
+              : "Your six groupings are ready. Add the literature concepts when available."}
+          </strong>
+          <p>
+            {activeConcepts.length
+              ? "Edit definitions, citations, and human-entered mappings in the method editor."
+              : "The repository source is empty. Add the actual 15 literature concepts locally; no research content is filled in automatically."}
+          </p>
+        </div>
+        <Link
+          to="/method?tab=concepts&action=new"
+          className="button button-secondary"
+        >
+          <Plus size={16} /> Add concept
+        </Link>
       </div>
       <div className="dashboard-main-grid">
         <section className="card activity-section">
           <SectionHeading
             title="Activity profiles"
-            subtitle="Your engineering activities, ready for assessment."
+            subtitle="Descriptions, evidence, and human assessment records."
           >
             <Link to="/activities" className="text-link">
               View all <ArrowRight size={15} />
@@ -210,14 +241,14 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {activities.slice(0, 4).map((a, i) => (
+                {activities.slice(0, 5).map((a, index) => (
                   <tr key={a.id}>
                     <td>
                       <Link
                         to={`/activities?activity=${a.id}`}
                         className="activity-cell"
                       >
-                        <span className={`activity-code code-${i % 3}`}>
+                        <span className={`activity-code code-${index % 3}`}>
                           {a.code}
                         </span>
                         <span>
@@ -227,7 +258,7 @@ export default function Dashboard() {
                       </Link>
                     </td>
                     <td>
-                      <CoverageBar counts={coverage(a)} />
+                      <CoverageBar counts={coverage(a, method)} />
                     </td>
                     <td>
                       <StatusBadge status={a.reviewStatus} />
@@ -247,7 +278,10 @@ export default function Dashboard() {
             </table>
             {!activities.length && (
               <EmptyState title="Create your first activity">
-                <button className="text-button" onClick={createActivity}>
+                <button
+                  className="button button-primary"
+                  onClick={createActivity}
+                >
                   Create activity
                 </button>
               </EmptyState>
@@ -255,10 +289,10 @@ export default function Dashboard() {
           </div>
           <div className="table-footer">
             <span>
-              <span className="live-dot" /> {activities.length} profiles in this
-              workspace
+              <span className="live-dot" />
+              {activities.length} activity profiles
             </span>
-            <span>Locally saved</span>
+            <span>Saved in this browser</span>
           </div>
         </section>
         <section className="card evidence-summary">
@@ -266,8 +300,8 @@ export default function Dashboard() {
           <div className="donut-container">
             <svg
               viewBox="0 0 160 160"
-              aria-label={`${percent}% of grouping records have Present evidence`}
               role="img"
+              aria-label={`${percent}% of factors have current Present evidence`}
             >
               <circle cx="80" cy="80" r="64" className="donut-track" />
               <circle
@@ -292,10 +326,11 @@ export default function Dashboard() {
               ["Present", counts.present, "green-dot"],
               ["Partial", counts.partial, "amber-dot"],
               ["Not Evidenced", counts.absent, "gray-dot"],
-            ].map(([label, count, dot]) => (
+              ["Reapplication needed", counts.outdated, "violet-dot"],
+            ].map(([label, count, tone]) => (
               <div key={label}>
                 <span>
-                  <i className={`status-dot ${dot}`} />
+                  <i className={`status-dot ${tone}`} />
                   {label}
                 </span>
                 <strong>{count}</strong>
@@ -303,66 +338,17 @@ export default function Dashboard() {
             ))}
           </div>
           <p className="evidence-disclaimer">
-            Evidence completeness, not a risk score.
+            Documentation completeness, not a risk score.
           </p>
         </section>
       </div>
-      <div className="dashboard-bottom-grid">
-        <section className="card next-steps">
-          <SectionHeading
-            title="Move your assessment forward"
-            subtitle="A few useful next steps for this workspace."
-          />
-          <Link
-            to={
-              activities.length
-                ? `/activities?activity=${activities[0].id}`
-                : "/activities"
-            }
-            className="next-step"
-          >
-            <span className="step-icon sage">
-              <FolderOpen size={18} />
-            </span>
-            <div>
-              <strong>Build the evidence record</strong>
-              <p>Add descriptions, screenshots, and supporting files.</p>
-            </div>
-            <ArrowUpRight size={18} />
-          </Link>
-          <Link to="/recommendations" className="next-step">
-            <span className="step-icon amber">
-              <ClipboardList size={18} />
-            </span>
-            <div>
-              <strong>Review outstanding conditions</strong>
-              <p>See the explicit rules behind each recommendation.</p>
-            </div>
-            <ArrowUpRight size={18} />
-          </Link>
-        </section>
-        <section className="principles-card">
-          <span className="section-label">
-            <ShieldCheck size={17} /> BUILT FOR TRANSPARENCY
-          </span>
-          <h3>
-            Supporting better judgement.
-            <br />
-            Keeping people in control.
-          </h3>
-          <p>
-            This workspace structures evidence for human assessment. Uploaded
-            files are supporting material and are never automatically analyzed.
-          </p>
-          <div>
-            <Badge tone="outline">
-              <Check size={12} /> No AI-generated conclusions
-            </Badge>
-            <Link to="/method">
-              Method details <ArrowUpRight size={15} />
-            </Link>
-          </div>
-        </section>
+      <div className="info-box">
+        <Info size={19} />
+        <p>
+          All edits stay in this browser. Export JSON to back up or share the
+          method, concept mappings, assessments, and supporting files. Uploaded
+          material is never automatically analyzed.
+        </p>
       </div>
     </>
   );

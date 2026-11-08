@@ -47,7 +47,7 @@ const navigation = [
   ["/activities", "Activity profiles", FolderOpen],
   ["/rubric", "Assessment rubric", ListChecks],
   ["/recommendations", "Recommendation map", GitBranch],
-  ["/method", "Reapplication & updates", BookOpen],
+  ["/method", "Method & concepts", BookOpen],
 ];
 function readInitial() {
   try {
@@ -85,6 +85,7 @@ export default function App() {
   });
   const [pendingImport, setPendingImport] = useState(null),
     [importError, setImportError] = useState("");
+  const workspaceRef = useRef(workspace);
   const importRef = useRef(null),
     location = useLocation(),
     navigate = useNavigate();
@@ -181,7 +182,10 @@ export default function App() {
     return () => controller.abort();
   }, [workspace.conceptSource]);
   function commit(next, message, replaceUnreadable = false) {
-    const updated = { ...next, updatedAt: new Date().toISOString() };
+    const candidate =
+      typeof next === "function" ? next(workspaceRef.current) : next;
+    const updated = { ...candidate, updatedAt: new Date().toISOString() };
+    workspaceRef.current = updated;
     setWorkspace(updated);
     if (unreadableBackup && !replaceUnreadable) {
       setStorageError(
@@ -224,8 +228,8 @@ export default function App() {
     event.target.value = "";
     if (!file) return;
     try {
-      if (file.size > 6 * 1024 * 1024)
-        throw new Error("Choose a JSON backup smaller than 6 MB.");
+      if (file.size > 16 * 1024 * 1024)
+        throw new Error("Choose a JSON backup smaller than 16 MB.");
       setPendingImport(validateWorkspace(JSON.parse(await file.text())));
       setImportError("");
     } catch (e) {
@@ -332,7 +336,7 @@ export default function App() {
           </button>
           <div className="sidebar-footer">
             <span>ROSS VIDEO × CAPSTONE</span>
-            <small>Proof of concept · v0.1</small>
+            <small>Proof of concept · v0.2</small>
           </div>
         </div>
       </aside>
@@ -461,6 +465,7 @@ export default function App() {
             navigate(`/activities?activity=${activity.id}`);
           }}
           activities={workspace.activities}
+          method={workspace.method}
         />
       )}
       {helpOpen && (
@@ -568,7 +573,7 @@ export default function App() {
     </WorkspaceContext.Provider>
   );
 }
-function NewActivity({ onClose, onCreate, activities }) {
+function NewActivity({ onClose, onCreate, activities, method }) {
   const [error, setError] = useState("");
   return (
     <Modal title="Create activity profile" onClose={onClose}>
@@ -601,6 +606,7 @@ function NewActivity({ onClose, onCreate, activities }) {
               code,
               title,
               data.get("description").trim(),
+              method,
             ),
           );
         }}

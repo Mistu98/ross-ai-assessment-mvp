@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "methodVersion": "0.1-draft",
+  "updatedAt": null,
+  "conceptSource": null,
+  "activities": [
+    {
+      "id": "a1",
+      "code": "A1",
+      "title": "AI-assisted bug fixing",
+      "description": "Document a bug-fixing activity: the problem, AI assistance used, code changes, validation, and human review.",
+      "tool": "",
+      "owner": "",
+      "reviewStatus": "Draft",
+      "reviewedBy": "",
+      "reviewedAt": null,
+      "updatedAt": "2026-11-08T02:25:09.352Z",
+      "evidence": [
+        {
+          "id": "legacy-file",
+          "name": "synthetic-legacy.txt",
+          "size": 4,
+          "type": "text/plain",
+          "dataUrl": "data:text/plain;base64,dGVzdA==",
+          "addedAt": "2026-01-01T00:00:00Z"
+        }
+      ],
+      "assessments": {
+        "validation": {
+          "status": "Present",
+          "rationale": "Synthetic fixture: tests observed before migration.",
+          "evidenceIds": ["legacy-file"],
+          "condition": "",
+          "recorded": true
+        },
+        "autonomy": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "controls": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "oversight": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "context": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "traceability": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        }
+      }
+    },
+    {
+      "id": "a2",
+      "code": "A2",
+      "title": "Agent-supported development",
+      "description": "Document an agent-supported development, build-and-test activity, including execution boundaries and approval checkpoints.",
+      "tool": "",
+      "owner": "",
+      "reviewStatus": "Draft",
+      "reviewedBy": "",
+      "reviewedAt": null,
+      "updatedAt": null,
+      "evidence": [],
+      "assessments": {
+        "validation": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "autonomy": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "controls": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "oversight": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "context": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "traceability": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        }
+      }
+    },
+    {
+      "id": "a3",
+      "code": "A3",
+      "title": "AI-assisted code review",
+      "description": "Document an AI-assisted code review activity, the review scope, and how findings are verified by a human reviewer.",
+      "tool": "",
+      "owner": "",
+      "reviewStatus": "Draft",
+      "reviewedBy": "",
+      "reviewedAt": null,
+      "updatedAt": null,
+      "evidence": [],
+      "assessments": {
+        "validation": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "autonomy": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "controls": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "oversight": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "context": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        },
+        "traceability": {
+          "status": "Not Evidenced",
+          "rationale": "",
+          "evidenceIds": [],
+          "condition": "",
+          "recorded": false
+        }
+      }
+    }
+  ]
+}

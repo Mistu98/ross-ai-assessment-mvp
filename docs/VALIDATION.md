@@ -1,41 +1,36 @@
-# Validation record
+# Editable method validation record
 
-This record applies to the frontend integrated into `Mistu98/ross-ai-assessment-mvp` on the feature branch. The repository's existing source data and KNIME artifacts are retained unchanged.
+This record applies to the editable-method update on `feat/editable-method-and-evidence`.
 
-- `npm ci`: passed using the committed lockfile.
-- `npm test`: 11 tests passed.
-- `npm run build`: passed (Vite production output).
-- `npm run test:e2e`: 14 tests passed, seven scenarios each in desktop Chromium and mobile Chromium using an iPhone 13 viewport.
-- `cmp data/concepts.json dist/data/concepts.json`: passed; the source is copied byte-for-byte into the build.
-- `git diff main -- data/ knime/`: empty; both original directories are unchanged.
-- `npm audit --omit=dev`: no production dependency vulnerabilities reported at validation time.
-- Desktop and mobile screenshots were inspected. Integrated production dashboard and empty-source library were inspected after source connection.
+- `npm test`: 21 tests passed.
+- `npm run build`: passed.
+- `npm run test:e2e`: 26 tests passed, 13 scenarios each in desktop Chromium and mobile Chromium using an iPhone 13 viewport.
+- `cmp data/concepts.json dist/data/concepts.json`: passed; the original concept source is copied byte-for-byte.
+- `git diff main -- data/ knime/`: empty; original data and KNIME artifacts remain unchanged.
+- `git diff --check`: passed.
+- The revised dashboard and method editor were visually inspected. All six grouping names, draft labels, descriptions, and edit/assess actions are visible on the dashboard.
 
-## Covered behavior
+## New behavior verified
 
-- Starter profiles contain no invented assessment evidence or risk scores.
-- Create/edit profiles; attach and persist synthetic file bytes.
-- Require a human rationale for every recorded status and an unresolved condition for Partial.
-- Calculate documentation completeness separately from risk severity.
-- Show explicit follow-up rules; Present evidence with an unresolved condition still prompts follow-up.
-- Export/restore JSON, retaining file contents and rationale; reject invalid backups.
-- Reject incompatible method versions, duplicate IDs/codes, missing evidence references, malformed attachments, and unrecorded non-default statuses.
-- Require six recorded assessments and a named reviewer before a human review checkpoint.
-- Keep review separate from completeness and invalidate the checkpoint after profile/assessment changes.
-- Prevent removal of a linked file.
-- Read the actual deployed repository JSON and compare it to the source; load, search, inspect, and persist synthetic concept fixtures locally.
-- Show explicit empty and unavailable source states without filling in concepts or citations.
-- Navigate all five pages on desktop/mobile without page-width overflow; the keyboard skip link preserves the hash route.
-- Show explicit storage failure and retain exportable changes in memory.
-- Preserve unreadable original storage and allow its recovery download.
+- Rename a grouping and see its new label on the dashboard and assessment pages after refresh.
+- Add factors to existing activities and newly created profiles; dynamic evidence coverage and recommendations use them.
+- Edit criteria, change a factor's grouping, archive/restore it, and retain the existing assessment ID/status/rationale.
+- Require reapplication after edited criteria, linked source concepts, or linked evidence. Earlier human statuses are preserved and excluded from current coverage until reassessed.
+- Capture criterion/method/source snapshots with new assessments, retain them during later edits, and include them in backups.
+- Create literature concepts with citations, map them to groups, link them to factors, and retain raw source fields without mutating the repository file.
+- Export/restore a complete method, concept mappings, assessments, written evidence, and file bytes.
+- Add/edit written evidence; replace a file and verify its downloaded bytes after refresh; preview an uploaded PNG without analysis.
+- Load a synthetic backup generated using the actual v0.1 implementation from main. Preserve its human status, rationale, evidence links, and file bytes through migration and a schema-2 round trip.
+- Retain existing profile, human-review, status-validation, rule-explanation, source-loading, storage-error, recovery, navigation, and responsive-layout checks.
 
-All test fixtures are synthetic. They are not included as research concepts, engineering artifacts, or completed assessments in the initial workspace.
+All fixtures are explicitly synthetic. No Ross engineering artifacts or actual literature claims were added as demonstration data.
 
-## Method status and limits
+## Boundaries
 
-- The source envelope (`concepts` array) is confirmed; it currently contains zero entries. Individual entry fields and the finalized 15 concepts/six-group map remain pending the project owner's later update.
-- The owner explicitly instructed that working grouping labels remain provisional and `data/concepts.json` remain unchanged. The UI and documentation reflect that instruction.
-- The KNIME archive structure and node labels were inspected, including CSV readers/writers and text/clustering analysis. KNIME was not executed; no working Excel-to-JSON automation is claimed.
-- Browser checks used Chromium; Safari and Firefox were not tested.
-- Netlify configuration is provided. No deployment was created or verified.
-- Changes are prepared for review on a feature branch; main is not merged or deployed by this work.
+- The six grouping labels, factor prompts, and recommendations remain provisional. The finalized 15 concepts and approved mapping still come from the project owner.
+- Editor changes are saved per browser, not to GitHub or other visitors. No server/database, external AI API, authentication, or MCP integration was added.
+- Files remain limited to 1 MB each and 2.5 MB across the workspace. Browser storage capacity also bounds method content and notes; save failures remain explicit and exportable.
+- Records are editable rather than an immutable audit log. Re-recording an assessment deliberately replaces its current record; export beforehand to retain the complete earlier workspace.
+- Archived definitions and their assessments are retained. A linked evidence record must be unlinked before removal.
+- Browser testing used Chromium. Safari/Firefox and the deployed live site were not tested because no live URL was supplied. The existing Netlify deployment configuration is retained.
+- No merge or deployment was performed by this update.
