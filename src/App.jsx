@@ -507,10 +507,9 @@ export default function App() {
               </p>
             </div>
             <p className="small muted">
-              The six working groupings and recommendation rules are
-              provisional. The repository source is connected, but its concepts
-              array is empty. Literature records and the approved mapping are
-              pending.
+              The working groupings and recommendation rules are provisional.
+              The repository source is connected, but its concepts array is
+              empty. Literature records and the approved mapping are pending.
             </p>
             <button
               className="button button-primary"

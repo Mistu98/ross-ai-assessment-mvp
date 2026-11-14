@@ -93,7 +93,7 @@ test("Present evidence with an open condition still triggers a follow-up", () =>
 });
 test("review is an explicit human checkpoint and evidence edits invalidate it", () => {
   let activity = initialWorkspace().activities[0];
-  assert.throws(() => reviewActivity(activity, "Reviewer"), /six/);
+  assert.throws(() => reviewActivity(activity, "Reviewer"), /active groupings/);
   for (const group of GROUPS)
     activity = assessActivity(activity, group.id, {
       status: "Not Evidenced",

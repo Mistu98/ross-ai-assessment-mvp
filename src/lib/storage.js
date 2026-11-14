@@ -1,5 +1,8 @@
 import {
-  GROUPS,
+  CATEGORIES,
+  MAX_GROUPS,
+  activeGroups,
+  validIdentifier,
   METHOD,
   STATUSES,
   REVIEW_STATUSES,
@@ -15,28 +18,25 @@ export const MAX_FILE_BYTES = 1024 * 1024;
 export const MAX_TOTAL_BYTES = 2.5 * 1024 * 1024;
 const text = (v, limit = 20000) =>
   typeof v === "string" ? v.slice(0, limit) : "";
-const validId = (id) =>
-  typeof id === "string" &&
-  id.length > 0 &&
-  id.length <= 100 &&
-  !["__proto__", "constructor", "prototype"].includes(id);
-function validateMethod(raw) {
+const validId = validIdentifier;
+export function validateMethod(raw) {
   if (
     !raw ||
     !Array.isArray(raw.groups) ||
-    raw.groups.length !== 6 ||
+    raw.groups.length < 1 ||
+    raw.groups.length > MAX_GROUPS ||
     !Number.isInteger(raw.revision) ||
     raw.revision < 1
   )
     throw new Error(
-      "The method must contain the six groupings and a positive revision.",
+      "The method must contain 1–100 groupings and a positive revision.",
     );
   const ids = new Set(),
     groupIds = new Set();
   const groups = raw.groups.map((g) => {
-    const source = GROUPS.find((item) => item.id === g.id);
     if (
-      !source ||
+      !g ||
+      !validId(g.id) ||
       groupIds.has(g.id) ||
       !text(g.name, 200).trim() ||
       !text(g.prompt).trim() ||
@@ -48,13 +48,21 @@ function validateMethod(raw) {
     groupIds.add(g.id);
     return {
       id: g.id,
+      archived: Boolean(g.archived),
       name: text(g.name, 200),
       short: text(g.short, 200) || text(g.name, 200),
-      icon: source.icon,
-      category: source.category,
+      icon: ["check", "sliders", "shield", "users", "layers", "file"].includes(
+        g.icon,
+      )
+        ? g.icon
+        : "layers",
+      category: CATEGORIES.includes(g.category)
+        ? g.category
+        : "Technical controls",
       prompt: text(g.prompt),
       factors: g.factors.map((f) => {
         if (
+          !f ||
           !validId(f.id) ||
           ids.has(f.id) ||
           !text(f.name, 200).trim() ||
@@ -87,12 +95,24 @@ function validateMethod(raw) {
       }),
     };
   });
+  if (!groups.some((g) => !g.archived))
+    throw new Error("Keep at least one active grouping.");
   if (ids.size > 120)
     throw new Error(
       "The method supports up to 120 factors, including archived records.",
     );
   return {
     revision: raw.revision,
+    release:
+      raw.release &&
+      typeof raw.release === "object" &&
+      text(raw.release.version, 200).trim()
+        ? {
+            version: text(raw.release.version, 200),
+            source: text(raw.release.source, 500),
+            importedAt: text(raw.release.importedAt, 50),
+          }
+        : null,
     updatedAt: text(raw.updatedAt, 50) || null,
     groups,
     history: (Array.isArray(raw.history) ? raw.history : [])
@@ -261,6 +281,8 @@ export function validateWorkspace(raw) {
                     )
                       ? value.factorSnapshot.methodRevision
                       : 1,
+                    releaseVersion:
+                      text(value.factorSnapshot.releaseVersion, 200) || null,
                     concepts: (Array.isArray(value.factorSnapshot.concepts)
                       ? value.factorSnapshot.concepts
                       : []
@@ -284,7 +306,7 @@ export function validateWorkspace(raw) {
     if (
       reviewStatus === "Reviewed" &&
       (!text(a.reviewedBy).trim() ||
-        method.groups.some((g) => !g.factors.some((f) => !f.archived)) ||
+        activeGroups(method).some((g) => !g.factors.some((f) => !f.archived)) ||
         allFactors(method).some((f) => !isCurrent(assessments[f.id], f)))
     )
       throw new Error(

@@ -14,6 +14,7 @@ import {
 import { useWorkspace } from "../lib/workspace.jsx";
 import {
   STATUSES,
+  activeGroups,
   coverage,
   assessActivity,
   reviewActivity,
@@ -40,8 +41,8 @@ export default function Rubric() {
       workspace.activities.find((a) => a.id === params.get("activity")) ||
       workspace.activities[0],
     group =
-      method.groups.find((g) => g.id === params.get("group")) ||
-      method.groups[0],
+      activeGroups(method).find((g) => g.id === params.get("group")) ||
+      activeGroups(method)[0],
     factors = group.factors.filter((f) => !f.archived),
     factor = factors.find((f) => f.id === params.get("factor")) || factors[0];
   const counts = activity ? coverage(activity, method) : null;
@@ -63,8 +64,8 @@ export default function Rubric() {
       <div className="warning-banner">
         <Info size={19} />
         <span>
-          <strong>Provisional method.</strong> These six groupings and their
-          factors are editable working definitions.{" "}
+          <strong>Provisional method.</strong> These groupings and their factors
+          are editable working definitions.{" "}
           <Link to="/method?tab=groupings">
             Manage groupings & factors <ArrowRight size={13} />
           </Link>
@@ -121,7 +122,7 @@ export default function Rubric() {
           </div>
           <div className="rubric-layout">
             <nav className="group-nav" aria-label="Assessment groupings">
-              {method.groups.map((g, index) => {
+              {activeGroups(method).map((g, index) => {
                 const c = coverage(activity, method, g.id);
                 return (
                   <button
@@ -131,7 +132,9 @@ export default function Rubric() {
                       setParams({ activity: activity.id, group: g.id })
                     }
                   >
-                    <span className="group-number">0{index + 1}</span>
+                    <span className="group-number">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
                     <div>
                       <strong>{g.name}</strong>
                       <small>
@@ -325,6 +328,15 @@ function AssessmentForm({ activity, group, factor, onSave }) {
           <details className="rule-details">
             <summary>Earlier criterion and source context</summary>
             <div>
+              {initial.factorSnapshot && (
+                <p className="small muted">
+                  Recorded against{" "}
+                  {initial.factorSnapshot.releaseVersion ||
+                    "the local working method"}{" "}
+                  · method revision {initial.factorSnapshot.methodRevision} ·
+                  criterion revision {initial.factorSnapshot.revision}
+                </p>
+              )}
               <p>
                 {initial.factorSnapshot?.question ||
                   "An earlier criterion snapshot is not available in this imported record."}
@@ -485,7 +497,7 @@ function HumanReview({ activity, onClose }) {
       >
         <p>
           Review all {allFactors(workspace.method).length} active factor records
-          across the six groupings and their unresolved conditions. Records
+          across the active groupings and their unresolved conditions. Records
           needing reapplication must be assessed again; statuses do not all need
           to be Present.
         </p>

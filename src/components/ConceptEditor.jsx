@@ -89,22 +89,27 @@ export default function ConceptEditor({ concept, onClose }) {
         <fieldset>
           <legend>Map to assessment groupings</legend>
           <div className="concept-mapping-grid">
-            {workspace.method.groups.map((g) => (
-              <label key={g.id}>
-                <input
-                  type="checkbox"
-                  checked={groupIds.includes(g.id)}
-                  onChange={(e) =>
-                    setGroupIds(
-                      e.target.checked
-                        ? [...groupIds, g.id]
-                        : groupIds.filter((id) => id !== g.id),
-                    )
-                  }
-                />
-                <span>{g.name}</span>
-              </label>
-            ))}
+            {workspace.method.groups
+              .filter((g) => !g.archived || groupIds.includes(g.id))
+              .map((g) => (
+                <label key={g.id}>
+                  <input
+                    type="checkbox"
+                    checked={groupIds.includes(g.id)}
+                    onChange={(e) =>
+                      setGroupIds(
+                        e.target.checked
+                          ? [...groupIds, g.id]
+                          : groupIds.filter((id) => id !== g.id),
+                      )
+                    }
+                  />
+                  <span>
+                    {g.name}
+                    {g.archived ? " (archived)" : ""}
+                  </span>
+                </label>
+              ))}
           </div>
         </fieldset>
         <div className="info-box">
