@@ -14,7 +14,12 @@ import {
   Info,
 } from "lucide-react";
 import { useWorkspace } from "../lib/workspace.jsx";
-import { allFactors, coverage, recommendations } from "../lib/method.js";
+import {
+  allFactors,
+  coverage,
+  recommendations,
+  activeGroups,
+} from "../lib/method.js";
 import {
   Badge,
   PageHeading,
@@ -55,7 +60,7 @@ export default function Dashboard() {
       <PageHeading
         eyebrow="YOUR EDITABLE ASSESSMENT WORKSPACE"
         title="Assessment overview"
-        description="See the six groupings, shape your method, and review the supporting evidence."
+        description="See the active groupings, shape your method, and review the supporting evidence."
       >
         <button className="button button-secondary" onClick={exportData}>
           <Download size={17} /> Export workspace
@@ -122,7 +127,7 @@ export default function Dashboard() {
       </div>
       <section className="dashboard-groupings">
         <SectionHeading
-          title="The six assessment groupings"
+          title={`${activeGroups(method).length} assessment groupings`}
           subtitle="Working labels are provisional. Open a grouping to edit its factors, questions, and controls."
         >
           <Link to="/method?tab=groupings" className="text-link">
@@ -130,7 +135,7 @@ export default function Dashboard() {
           </Link>
         </SectionHeading>
         <div className="group-overview-grid">
-          {method.groups.map((group, index) => {
+          {activeGroups(method).map((group, index) => {
             const active = group.factors.filter((f) => !f.archived),
               mapped = activeConcepts.filter((c) =>
                 c.groupIds.includes(group.id),
@@ -145,10 +150,12 @@ export default function Dashboard() {
                 key={group.id}
               >
                 <div className="overview-group-top">
-                  <span className={`step-icon group-tone-${index}`}>
+                  <span className="step-icon group-tone">
                     <Icon name={group.icon} size={22} />
                   </span>
-                  <span className="eyebrow">GROUPING 0{index + 1}</span>
+                  <span className="eyebrow">
+                    GROUPING {String(index + 1).padStart(2, "0")}
+                  </span>
                   <Badge tone="amber">Draft</Badge>
                 </div>
                 <h2>{group.name}</h2>
@@ -203,12 +210,12 @@ export default function Dashboard() {
           <strong>
             {activeConcepts.length
               ? `${activeConcepts.length} literature concepts in your library`
-              : "Your six groupings are ready. Add the literature concepts when available."}
+              : "Your groupings are ready. Add the literature concepts when available."}
           </strong>
           <p>
             {activeConcepts.length
               ? "Edit definitions, citations, and human-entered mappings in the method editor."
-              : "The repository source is empty. Add the actual 15 literature concepts locally; no research content is filled in automatically."}
+              : "The library is empty. Add reviewed literature concepts and their mappings when available."}
           </p>
         </div>
         <Link

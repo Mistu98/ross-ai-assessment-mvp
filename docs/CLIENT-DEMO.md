@@ -10,7 +10,7 @@ Say:
 >
 > I’ll demonstrate one AI-assisted bug-fixing activity using non-confidential example evidence.
 
-Introduce the intended six-group structure briefly. Explain once that the displayed grouping labels and prompts remain provisional, while the finalized 15 literature concepts and approved mapping will be supplied through the research review process. Do not present the draft labels as approved research findings.
+Introduce the current grouping structure briefly (initially six provisional groupings). Explain once that the displayed grouping labels and prompts remain provisional, while the finalized 15 literature concepts and approved mapping will be supplied through the research review process. Do not present the draft labels as approved research findings.
 
 ## 1. Dashboard: orient the client
 
@@ -18,9 +18,9 @@ Open **Dashboard**.
 
 Say:
 
-> This gives an overview of the activities being assessed and the six groupings used to structure the assessment. It also shows how much supporting evidence has been documented and what still needs human attention.
+> This gives an overview of the activities being assessed and the current groupings used to structure the assessment. It also shows how much supporting evidence has been documented and what still needs human attention.
 
-Point to one grouping, **Validation & verification**. Explain that the six groupings are lenses applied to an activity, not six separate applications. Keep this overview brief. Evidence percentages express documentation completeness, not risk severity. A starter profile with no recorded assessment is not an assessed engineering result.
+Point to one grouping, **Validation & verification**. Explain that the groupings are lenses applied to an activity, not six separate applications. Keep this overview brief. Evidence percentages express documentation completeness, not risk severity. A starter profile with no recorded assessment is not an assessed engineering result.
 
 ## 2. Activity profiles: define the unit of work
 
@@ -73,7 +73,7 @@ Say:
 
 > The reason for the status and the condition still to be resolved are visible. Another assessor can inspect the same record and understand the judgement.
 
-Demonstrate one factor in this first walkthrough. A full activity review requires current human assessments for all active factors across the six groupings; the example does not mark the whole activity reviewed.
+Demonstrate one factor in this first walkthrough. A full activity review requires current human assessments for all active factors across the active groupings; the example does not mark the whole activity reviewed.
 
 ## 5. Recommendation map: explain the follow-up
 
@@ -105,7 +105,7 @@ Close with:
 
 - **Method & concepts → Groupings & factors:** the assessor can configure the working grouping labels, questions, controls, and recommendations.
 - **Concept library:** actual literature definitions, citations, and explicit mappings can be entered or loaded. No source content is invented.
-- **Method versions / Update workflow:** local revisions and the manual Excel → KNIME/CSV → reviewed JSON → GitHub process support later method maintenance.
+- **Method versions / Update workflow:** preview and import a revised method with a different grouping count; local revisions and the manual Excel → KNIME/CSV → reviewed JSON → GitHub process support later method maintenance.
 
 These are configuration and research-maintenance tools. They do not need to dominate the initial client demonstration.
 

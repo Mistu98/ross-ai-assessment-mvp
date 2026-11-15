@@ -84,15 +84,32 @@ export const GROUPS = [
     category: "Human oversight",
   },
 ];
+export const MAX_GROUPS = 100;
+export const CATEGORIES = [
+  "Validation",
+  "Autonomy",
+  "Technical controls",
+  "Human oversight",
+];
+export const activeGroups = (method) =>
+  method.groups.filter((g) => !g.archived);
+export const validIdentifier = (id) =>
+  typeof id === "string" &&
+  id.trim() === id &&
+  id.length > 0 &&
+  id.length <= 100 &&
+  !["__proto__", "constructor", "prototype"].includes(id);
 export const STATUSES = ["Present", "Partial", "Not Evidenced"];
 export const REVIEW_STATUSES = ["Draft", "In review", "Reviewed"];
 export function defaultMethod() {
   return {
     revision: 1,
+    release: null,
     updatedAt: null,
     history: [],
     groups: GROUPS.map((g) => ({
       id: g.id,
+      archived: false,
       name: g.name,
       short: g.short,
       icon: g.icon,
@@ -115,18 +132,20 @@ export function defaultMethod() {
   };
 }
 export function allFactors(method = defaultMethod(), includeArchived = false) {
-  return method.groups.flatMap((group) =>
-    group.factors
-      .filter((f) => includeArchived || !f.archived)
-      .map((f) => ({
-        ...f,
-        groupId: group.id,
-        groupName: group.name,
-        short: group.short,
-        icon: group.icon,
-        category: group.category,
-      })),
-  );
+  return method.groups
+    .filter((g) => includeArchived || !g.archived)
+    .flatMap((group) =>
+      group.factors
+        .filter((f) => includeArchived || !f.archived)
+        .map((f) => ({
+          ...f,
+          groupId: group.id,
+          groupName: group.name,
+          short: group.short,
+          icon: group.icon,
+          category: group.category,
+        })),
+    );
 }
 export const blankAssessment = (factorRevision = 1) => ({
   status: "Not Evidenced",
@@ -298,6 +317,7 @@ export function assessActivity(
           groupName: factor.groupName,
           revision: factor.revision,
           methodRevision: method.revision,
+          releaseVersion: method.release?.version || null,
           concepts: factor.conceptIds
             .map((id) => concepts.find((c) => c.id === id))
             .filter(Boolean)
@@ -316,11 +336,12 @@ export function reviewActivity(activity, reviewer, method = defaultMethod()) {
   if (!reviewer.trim())
     throw new Error("Enter the name of the human reviewer.");
   if (
-    method.groups.some((g) => !g.factors.some((f) => !f.archived)) ||
+    !activeGroups(method).length ||
+    activeGroups(method).some((g) => !g.factors.some((f) => !f.archived)) ||
     coverage(activity, method).recorded !== allFactors(method).length
   )
     throw new Error(
-      "Record a current human assessment for all active factors across the six groupings before marking this activity reviewed.",
+      "Record a current human assessment for all active factors across the active groupings before marking this activity reviewed.",
     );
   return {
     ...activity,
@@ -361,7 +382,10 @@ export function editGrouping(workspace, groupId, changes) {
   if (!changes.name?.trim() || !changes.prompt?.trim())
     throw new Error("Enter the grouping name and description.");
   const original = workspace.method.groups.find((g) => g.id === groupId);
-  const definitionChanged = changes.prompt.trim() !== original.prompt;
+  if (!original) throw new Error("Grouping not found.");
+  const definitionChanged =
+    changes.prompt.trim() !== original.prompt ||
+    (changes.category && changes.category !== original.category);
   const groups = workspace.method.groups.map((g) =>
     g.id === groupId
       ? {
@@ -369,6 +393,9 @@ export function editGrouping(workspace, groupId, changes) {
           name: changes.name.trim(),
           short: changes.name.trim(),
           prompt: changes.prompt.trim(),
+          category: CATEGORIES.includes(changes.category)
+            ? changes.category
+            : g.category,
           factors: g.factors.map((f) =>
             definitionChanged ? { ...f, revision: f.revision + 1 } : f,
           ),
@@ -409,7 +436,10 @@ export function saveFactor(workspace, groupId, input) {
     revision: existing ? existing.revision + 1 : 1,
     archived: existing?.archived || false,
   };
-  if (!factor.id || !workspace.method.groups.some((g) => g.id === groupId))
+  if (
+    !validIdentifier(factor.id) ||
+    !activeGroups(workspace.method).some((g) => g.id === groupId)
+  )
     throw new Error("Choose a valid grouping and factor ID.");
   const groups = workspace.method.groups.map((g) => ({
     ...g,
@@ -456,4 +486,61 @@ export function updateEvidence(activity, item) {
     evidence: activity.evidence.map((e) => (e.id === item.id ? item : e)),
     assessments,
   };
+}
+
+export function addGrouping(workspace, input) {
+  if (
+    !validIdentifier(input.id) ||
+    workspace.method.groups.some((g) => g.id === input.id)
+  )
+    throw new Error("Enter a unique stable grouping ID.");
+  if (!input.name?.trim() || !input.prompt?.trim())
+    throw new Error("Enter the grouping name and description.");
+  if (workspace.method.groups.length >= MAX_GROUPS)
+    throw new Error(
+      `The local method supports up to ${MAX_GROUPS} groupings, including archived records.`,
+    );
+  const group = {
+    id: input.id,
+    name: input.name.trim(),
+    short: input.name.trim(),
+    prompt: input.prompt.trim(),
+    category: CATEGORIES.includes(input.category)
+      ? input.category
+      : "Technical controls",
+    icon: "layers",
+    archived: false,
+    factors: [],
+  };
+  return reviseMethod(
+    workspace,
+    [...workspace.method.groups, group],
+    `Added grouping: ${group.name}`,
+  );
+}
+export function archiveGrouping(workspace, groupId, archived = true) {
+  const group = workspace.method.groups.find((g) => g.id === groupId);
+  if (!group) throw new Error("Grouping not found.");
+  if (
+    archived &&
+    !group.archived &&
+    activeGroups(workspace.method).length === 1
+  )
+    throw new Error("Keep at least one active grouping.");
+  if (group.archived === archived) return workspace;
+  return reviseMethod(
+    workspace,
+    workspace.method.groups.map((g) =>
+      g.id === groupId
+        ? {
+            ...g,
+            archived,
+            factors: g.factors.map((f) =>
+              archived ? f : { ...f, revision: f.revision + 1 },
+            ),
+          }
+        : g,
+    ),
+    `${archived ? "Archived" : "Restored"} grouping: ${group.name}`,
+  );
 }

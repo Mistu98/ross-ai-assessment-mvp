@@ -11,32 +11,58 @@ import {
 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useWorkspace } from "../lib/workspace.jsx";
-import { editGrouping, saveFactor, archiveFactor } from "../lib/method.js";
+import {
+  editGrouping,
+  addGrouping,
+  archiveGrouping,
+  activeGroups,
+  CATEGORIES,
+  saveFactor,
+  archiveFactor,
+} from "../lib/method.js";
 import { Badge, Icon, Modal, FormError } from "./ui.jsx";
 export default function MethodEditor() {
   const { workspace, commit, concepts } = useWorkspace(),
     [params] = useSearchParams();
   const [editingGroup, setEditingGroup] = useState(null),
     [editingFactor, setEditingFactor] = useState(null),
-    [showArchived, setShowArchived] = useState(false);
+    [showArchived, setShowArchived] = useState(false),
+    [showArchivedGroups, setShowArchivedGroups] = useState(false),
+    [error, setError] = useState("");
   return (
     <>
       <div className="method-editor-intro">
         <div>
-          <h2>Your six assessment groupings</h2>
+          <h2>{activeGroups(workspace.method).length} assessment groupings</h2>
           <p>
-            Rename each draft grouping and manage its assessment factors,
-            questions, and follow-up controls.
+            Add, rename, or archive groupings and manage their assessment
+            factors, questions, and follow-up controls.
           </p>
         </div>
-        <label className="toggle-label">
-          <input
-            type="checkbox"
-            checked={showArchived}
-            onChange={(e) => setShowArchived(e.target.checked)}
-          />{" "}
-          Show archived factors
-        </label>
+        <div className="method-editor-actions">
+          <button
+            className="button button-primary"
+            onClick={() => setEditingGroup("new")}
+          >
+            <Plus size={16} /> Add grouping
+          </button>
+          <label className="toggle-label">
+            <input
+              type="checkbox"
+              checked={showArchivedGroups}
+              onChange={(e) => setShowArchivedGroups(e.target.checked)}
+            />{" "}
+            Show archived groupings
+          </label>
+          <label className="toggle-label">
+            <input
+              type="checkbox"
+              checked={showArchived}
+              onChange={(e) => setShowArchived(e.target.checked)}
+            />{" "}
+            Show archived factors
+          </label>
+        </div>
       </div>
       <div className="info-box page-info">
         <Info size={19} />
@@ -46,108 +72,134 @@ export default function MethodEditor() {
           reapplication. Archiving keeps historical records.
         </p>
       </div>
+      <FormError>{error}</FormError>
       <div className="method-editor-grid">
-        {workspace.method.groups.map((group, index) => {
-          const factors = group.factors.filter(
-            (f) => showArchived || !f.archived,
-          );
-          return (
-            <section
-              key={group.id}
-              className={`card editable-group ${params.get("group") === group.id ? "highlight-group" : ""}`}
-              id={`group-${group.id}`}
-            >
-              <div className="editable-group-heading">
-                <span className={`step-icon group-tone-${index}`}>
-                  <Icon name={group.icon} size={22} />
-                </span>
-                <div>
-                  <span className="eyebrow">
-                    GROUPING 0{index + 1} · PROVISIONAL
+        {workspace.method.groups
+          .filter((g) => showArchivedGroups || !g.archived)
+          .map((group, index) => {
+            const factors = group.factors.filter(
+              (f) => showArchived || !f.archived,
+            );
+            return (
+              <section
+                key={group.id}
+                className={`card editable-group ${params.get("group") === group.id ? "highlight-group" : ""}`}
+                id={`group-${group.id}`}
+              >
+                <div className="editable-group-heading">
+                  <span className="step-icon group-tone">
+                    <Icon name={group.icon} size={22} />
                   </span>
-                  <h3>{group.name}</h3>
-                </div>
-                <button
-                  className="icon-button"
-                  aria-label={`Edit grouping ${group.name}`}
-                  onClick={() => setEditingGroup(group)}
-                >
-                  <Pencil size={17} />
-                </button>
-              </div>
-              <p className="group-description">{group.prompt}</p>
-              <div className="factor-list">
-                {factors.map((f) => (
-                  <div
-                    className={`factor-row ${f.archived ? "factor-archived" : ""}`}
-                    key={f.id}
-                  >
-                    <div>
-                      <strong>{f.name}</strong>
-                      <p>{f.question}</p>
-                      <small>
-                        {f.rule} · revision {f.revision}
-                        {f.archived ? " · Archived" : ""}
-                      </small>
-                    </div>
-                    <button
-                      className="icon-button"
-                      aria-label={`Edit factor ${f.name}`}
-                      onClick={() => setEditingFactor({ group, factor: f })}
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
-                      className="icon-button"
-                      aria-label={`${f.archived ? "Restore" : "Archive"} factor ${f.name}`}
-                      onClick={() =>
-                        commit(
-                          archiveFactor(workspace, f.id, !f.archived),
-                          f.archived
-                            ? "Factor restored"
-                            : "Factor archived; assessment history retained",
-                        )
-                      }
-                    >
-                      {f.archived ? (
-                        <RotateCcw size={16} />
-                      ) : (
-                        <Archive size={16} />
-                      )}
-                    </button>
+                  <div>
+                    <span className="eyebrow">
+                      GROUPING {String(index + 1).padStart(2, "0")} ·{" "}
+                      {group.archived ? "ARCHIVED" : "PROVISIONAL"}
+                    </span>
+                    <h3>{group.name}</h3>
                   </div>
-                ))}
-              </div>
-              {!factors.length && (
-                <p className="field-empty">
-                  No active factors. Add a question or control to assess this
-                  grouping.
-                </p>
-              )}
-              <div className="editable-group-footer">
+                  <button
+                    className="icon-button"
+                    aria-label={`Edit grouping ${group.name}`}
+                    onClick={() => setEditingGroup(group)}
+                  >
+                    <Pencil size={17} />
+                  </button>
+                </div>
+                <p className="group-description">{group.prompt}</p>
                 <button
-                  className="text-button"
-                  onClick={() => setEditingFactor({ group, factor: null })}
+                  className="text-button grouping-archive-action"
+                  onClick={() => {
+                    try {
+                      commit(
+                        archiveGrouping(workspace, group.id, !group.archived),
+                        group.archived
+                          ? "Grouping restored; reassess its factors"
+                          : "Grouping archived; evidence retained",
+                      );
+                      setError("");
+                    } catch (err) {
+                      setError(err.message);
+                    }
+                  }}
                 >
-                  <Plus size={16} /> Add factor
+                  <Archive size={15} />{" "}
+                  {group.archived ? "Restore grouping" : "Archive grouping"}
                 </button>
-                <span>
-                  {group.factors.filter((f) => !f.archived).length} active ·{" "}
-                  {
-                    concepts.items.filter(
-                      (c) => !c.archived && c.groupIds.includes(group.id),
-                    ).length
-                  }{" "}
-                  mapped concepts
-                </span>
-              </div>
-            </section>
-          );
-        })}
+                <div className="factor-list">
+                  {factors.map((f) => (
+                    <div
+                      className={`factor-row ${f.archived ? "factor-archived" : ""}`}
+                      key={f.id}
+                    >
+                      <div>
+                        <strong>{f.name}</strong>
+                        <p>{f.question}</p>
+                        <small>
+                          {f.rule} · revision {f.revision}
+                          {f.archived ? " · Archived" : ""}
+                        </small>
+                      </div>
+                      <button
+                        className="icon-button"
+                        disabled={group.archived}
+                        aria-label={`Edit factor ${f.name}`}
+                        onClick={() => setEditingFactor({ group, factor: f })}
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
+                        className="icon-button"
+                        disabled={group.archived}
+                        aria-label={`${f.archived ? "Restore" : "Archive"} factor ${f.name}`}
+                        onClick={() =>
+                          commit(
+                            archiveFactor(workspace, f.id, !f.archived),
+                            f.archived
+                              ? "Factor restored"
+                              : "Factor archived; assessment history retained",
+                          )
+                        }
+                      >
+                        {f.archived ? (
+                          <RotateCcw size={16} />
+                        ) : (
+                          <Archive size={16} />
+                        )}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                {!factors.length && (
+                  <p className="field-empty">
+                    No active factors. Add a question or control to assess this
+                    grouping.
+                  </p>
+                )}
+                <div className="editable-group-footer">
+                  <button
+                    className="text-button"
+                    disabled={group.archived}
+                    onClick={() => setEditingFactor({ group, factor: null })}
+                  >
+                    <Plus size={16} /> Add factor
+                  </button>
+                  <span>
+                    {group.factors.filter((f) => !f.archived).length} active ·{" "}
+                    {
+                      concepts.items.filter(
+                        (c) => !c.archived && c.groupIds.includes(group.id),
+                      ).length
+                    }{" "}
+                    mapped concepts
+                  </span>
+                </div>
+              </section>
+            );
+          })}
       </div>
       {editingGroup && (
         <GroupDialog
-          group={editingGroup}
+          group={editingGroup === "new" ? null : editingGroup}
           onClose={() => setEditingGroup(null)}
         />
       )}
@@ -165,7 +217,10 @@ function GroupDialog({ group, onClose }) {
   const { workspace, commit } = useWorkspace(),
     [error, setError] = useState("");
   return (
-    <Modal title={`Edit grouping: ${group.name}`} onClose={onClose}>
+    <Modal
+      title={group ? `Edit grouping: ${group.name}` : "Add assessment grouping"}
+      onClose={onClose}
+    >
       <form
         className="modal-body form-stack"
         onSubmit={(e) => {
@@ -173,11 +228,21 @@ function GroupDialog({ group, onClose }) {
           const data = new FormData(e.currentTarget);
           try {
             commit(
-              editGrouping(workspace, group.id, {
-                name: data.get("name"),
-                prompt: data.get("prompt"),
-              }),
-              "Grouping updated",
+              group
+                ? editGrouping(workspace, group.id, {
+                    name: data.get("name"),
+                    prompt: data.get("prompt"),
+                    category: data.get("category"),
+                  })
+                : addGrouping(workspace, {
+                    id: `group-${crypto.randomUUID()}`,
+                    name: data.get("name"),
+                    prompt: data.get("prompt"),
+                    category: data.get("category"),
+                  }),
+              group
+                ? "Grouping updated"
+                : "Grouping added; add its assessment factors next",
             );
             onClose();
           } catch (err) {
@@ -191,7 +256,7 @@ function GroupDialog({ group, onClose }) {
             name="name"
             required
             maxLength={200}
-            defaultValue={group.name}
+            defaultValue={group?.name}
           />
         </label>
         <label>
@@ -201,12 +266,25 @@ function GroupDialog({ group, onClose }) {
             required
             rows={4}
             maxLength={20000}
-            defaultValue={group.prompt}
+            defaultValue={group?.prompt}
           />
         </label>
+        <label>
+          Recommendation category
+          <select
+            aria-label="Recommendation category"
+            name="category"
+            defaultValue={group?.category || "Technical controls"}
+          >
+            {CATEGORIES.map((category) => (
+              <option key={category}>{category}</option>
+            ))}
+          </select>
+        </label>
         <p className="small muted">
-          The stable grouping ID remains {group.id}. Description changes require
-          reapplication of its factors; prior assessments are retained.
+          {group
+            ? `The stable grouping ID remains ${group.id}. Description or category changes require reapplication; prior assessments are retained.`
+            : "A stable grouping ID will be created. Add assessment factors after saving; new criteria begin without a human assessment."}
         </p>
         <FormError>{error}</FormError>
         <div className="modal-actions">
@@ -269,7 +347,7 @@ function FactorDialog({ group, factor, onClose }) {
         <label>
           Assessment grouping
           <select value={groupId} onChange={(e) => setGroupId(e.target.value)}>
-            {workspace.method.groups.map((g) => (
+            {activeGroups(workspace.method).map((g) => (
               <option key={g.id} value={g.id}>
                 {g.name}
               </option>

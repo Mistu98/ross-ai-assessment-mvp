@@ -28,7 +28,7 @@ export function saveConcept(workspace, library, input, originalId = null) {
       (value) => !workspace.method.groups.some((g) => g.id === value),
     )
   )
-    throw new Error("Choose one of the six method groupings.");
+    throw new Error("Choose an existing method grouping.");
   const original = library.items.find((c) => c.id === originalId);
   const record = {
     ...original?.raw,

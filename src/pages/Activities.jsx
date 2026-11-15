@@ -213,7 +213,7 @@ function Profile({ activity, onDeleted }) {
       <div className="profile-next">
         <div>
           <h3>Ready to assess the evidence?</h3>
-          <p>Assess the editable factors across the six working groupings.</p>
+          <p>Assess the editable factors across the active groupings.</p>
         </div>
         <Link
           to={`/rubric?activity=${activity.id}`}

@@ -18,7 +18,7 @@ import {
   Archive,
 } from "lucide-react";
 import { useWorkspace } from "../lib/workspace.jsx";
-import { METHOD, allFactors } from "../lib/method.js";
+import { METHOD, allFactors, activeGroups } from "../lib/method.js";
 import { parseConcepts } from "../lib/concepts.js";
 import {
   Badge,
@@ -30,6 +30,7 @@ import {
 } from "../components/ui.jsx";
 import MethodEditor from "../components/MethodEditor.jsx";
 import ConceptEditor from "../components/ConceptEditor.jsx";
+import MethodTransfer from "../components/MethodTransfer.jsx";
 const tabs = [
   ["groupings", "Groupings & factors"],
   ["concepts", "Concept library"],
@@ -118,7 +119,7 @@ export default function Method() {
       <PageHeading
         eyebrow="YOUR EDITABLE ASSESSMENT METHOD"
         title="Method & concept editor"
-        description="Manage the six groupings, assessment factors, literature records, and their mappings."
+        description="Manage the active groupings, assessment factors, literature records, and their mappings."
       >
         <button
           className="button button-secondary"
@@ -154,7 +155,7 @@ export default function Method() {
             EDITABLE WORKING METHOD · REVISION {workspace.method.revision}
           </div>
           <h2>
-            Six groupings.{" "}
+            {activeGroups(workspace.method).length} active groupings.{" "}
             <span>
               {allFactors(workspace.method).length} assessment factors.
             </span>
@@ -234,7 +235,7 @@ export default function Method() {
                 </strong>
                 <p>
                   {concepts.state === "loaded"
-                    ? `${workspace.conceptSource ? "Browser library override" : "Repository file"} · ${active.length ? "Human-entered definitions and mappings." : "The concepts array is empty. The six working groupings are available in the Groupings & factors tab."}`
+                    ? `${workspace.conceptSource ? "Browser library override" : "Repository file"} · ${active.length ? "Human-entered definitions and mappings." : "The concepts array is empty. The working groupings are available in the Groupings & factors tab."}`
                     : "The concept source could not be loaded. You can create local concept records or load a JSON copy."}
                 </p>
               </div>
@@ -370,7 +371,7 @@ export default function Method() {
                   <p>
                     {concepts.items.length
                       ? "Adjust your search, grouping, or archived filter."
-                      : "The six draft groupings are visible and editable. Add the actual literature concepts here when ready; no concepts or citations are invented."}
+                      : "The draft groupings are visible and editable. Add the actual literature concepts here when ready; no concepts or citations are invented."}
                   </p>
                   <button
                     className="button button-primary"
@@ -388,9 +389,9 @@ export default function Method() {
               </div>
             )}
             <p className="method-footnote small muted">
-              <Info size={16} /> The project brief expects 15 literature
-              concepts. Local edits are included in exports and do not modify
-              data/concepts.json.
+              <Info size={16} /> Concept and grouping counts follow the current
+              research method. Local edits are included in exports and do not
+              modify data/concepts.json.
             </p>
           </>
         )}
@@ -406,18 +407,21 @@ export default function Method() {
               </div>
               <Badge tone="amber">Implementation draft</Badge>
             </div>
+            <MethodTransfer />
             <div className="card version-card">
               <span className="version-marker">
                 <GitBranch size={20} />
               </span>
               <div>
                 <h3>
-                  {METHOD.version} · local revision {workspace.method.revision}
+                  {workspace.method.release?.version ||
+                    "Provisional starting method"}{" "}
+                  · local revision {workspace.method.revision}
                 </h3>
                 <p>
                   Editable factors, concept mappings, evidence records, and a
-                  visible six-group overview. Earlier v0.1 records are migrated
-                  without discarding their evidence.{" "}
+                  data-driven grouping overview. Earlier v0.1 records are
+                  migrated without discarding their evidence.{" "}
                   {workspace.migratedFrom &&
                     `This workspace was migrated from ${workspace.migratedFrom}.`}
                 </p>
@@ -460,8 +464,9 @@ export default function Method() {
                   <Check size={20} /> Implemented in this prototype
                 </h3>
                 <ul>
-                  <li>Editable grouping names and descriptions</li>
+                  <li>Add, edit, archive, and restore groupings</li>
                   <li>Add, edit, archive, and restore assessment factors</li>
+                  <li>Preview and apply versioned method JSON updates</li>
                   <li>Literature concept editing and explicit mappings</li>
                   <li>
                     Human assessment, written/file evidence, and reapplication

@@ -876,12 +876,7 @@ main {
 .overview-group-actions .text-link {
   font-size: 12px;
 }
-.group-tone-0,
-.group-tone-1,
-.group-tone-2,
-.group-tone-3,
-.group-tone-4,
-.group-tone-5 {
+.group-tone {
   background: #f3f5f8;
   color: #5f6b7b;
 }
@@ -3339,5 +3334,54 @@ h3,
 @media (max-width: 760px) {
   .data-toolbar {
     margin: 0 auto 25px;
+  }
+}
+
+.method-editor-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.grouping-archive-action {
+  margin-bottom: 18px;
+}
+.method-transfer {
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.method-transfer p {
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+.method-transfer .heading-actions {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.method-import-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.method-import-summary div {
+  padding: 12px;
+  background: var(--bg, #f4f5f7);
+  border-radius: 8px;
+}
+.method-import-summary dt {
+  font-size: 13px;
+  color: #596575;
+}
+.method-import-summary dd {
+  margin: 4px 0 0;
+  font-weight: 600;
+}
+.method-import-summary > div:last-child {
+  grid-column: 1 / -1;
+}
+@media (max-width: 600px) {
+  .method-transfer .heading-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
