@@ -1,9 +1,12 @@
 import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   UploadCloud,
   Plus,
   FileText,
   Image,
+  ImageOff,
+  ArrowRight,
   Download,
   Trash2,
   Pencil,
@@ -13,7 +16,7 @@ import {
   Info,
 } from "lucide-react";
 import { useWorkspace } from "../lib/workspace.jsx";
-import { invalidateReview, updateEvidence } from "../lib/method.js";
+import { coverage, invalidateReview, updateEvidence } from "../lib/method.js";
 import {
   downloadEvidence,
   MAX_FILE_BYTES,
@@ -53,7 +56,8 @@ export default function EvidencePanel({ activity }) {
     [editing, setEditing] = useState(null),
     [viewing, setViewing] = useState(null),
     inputRef = useRef(null),
-    used = fileBytes(workspace);
+    used = fileBytes(workspace),
+    progress = coverage(activity, workspace.method);
   async function attach(files) {
     if (!files.length) return;
     try {
@@ -164,6 +168,26 @@ export default function EvidencePanel({ activity }) {
             event.target.value = "";
           }}
         />
+        {activity.evidence.length > 0 && (
+          <div className="evidence-next-step" role="status">
+            <div>
+              <strong>
+                {activity.evidence.length} supporting{" "}
+                {activity.evidence.length === 1 ? "record" : "records"} attached
+                · {progress.recorded}/{progress.total} current factor
+                assessments recorded
+              </strong>
+              <p>
+                Uploads and assessment status are separate. Link these records
+                to factors in the rubric and record your human judgement.
+                Reviewed requires a named human review.
+              </p>
+            </div>
+            <Link className="text-link" to={`/rubric?activity=${activity.id}`}>
+              Link evidence in rubric <ArrowRight size={16} />
+            </Link>
+          </div>
+        )}
         {!activity.evidence.length && (
           <button
             className="upload-zone"
@@ -190,7 +214,7 @@ export default function EvidencePanel({ activity }) {
                 aria-label={`View evidence ${e.name}`}
               >
                 {imageEvidence(e) ? (
-                  <img src={e.dataUrl} alt={e.caption || e.name} />
+                  <EvidenceImage evidence={e} />
                 ) : e.kind === "note" ? (
                   <FileText size={25} />
                 ) : (
@@ -255,11 +279,7 @@ export default function EvidencePanel({ activity }) {
         <Modal title={viewing.name} wide onClose={() => setViewing(null)}>
           <div className="modal-body form-stack">
             {imageEvidence(viewing) ? (
-              <img
-                className="evidence-full-image"
-                src={viewing.dataUrl}
-                alt={viewing.caption || viewing.name}
-              />
+              <EvidenceImage evidence={viewing} full />
             ) : viewing.kind === "note" ? (
               <p className="preserve-whitespace">{viewing.content}</p>
             ) : (
@@ -282,6 +302,37 @@ export default function EvidencePanel({ activity }) {
         </Modal>
       )}
     </section>
+  );
+}
+function EvidenceImage({ evidence, full = false }) {
+  const [failedSource, setFailedSource] = useState(null);
+  if (failedSource === evidence.dataUrl)
+    return full ? (
+      <div className="evidence-preview-unavailable" role="status">
+        <ImageOff size={28} />
+        <strong>Image preview unavailable</strong>
+        <p>
+          The file is still attached. Download it to inspect it, or use Edit
+          evidence to replace it. A preview failure does not change your
+          assessment.
+        </p>
+      </div>
+    ) : (
+      <span
+        role="img"
+        aria-label={`Preview unavailable for ${evidence.name}`}
+        title="Preview unavailable; file remains attached"
+      >
+        <ImageOff size={25} />
+      </span>
+    );
+  return (
+    <img
+      className={full ? "evidence-full-image" : undefined}
+      src={evidence.dataUrl}
+      alt={evidence.caption || evidence.name}
+      onError={() => setFailedSource(evidence.dataUrl)}
+    />
   );
 }
 function EvidenceEditor({ activity, evidence, onClose }) {

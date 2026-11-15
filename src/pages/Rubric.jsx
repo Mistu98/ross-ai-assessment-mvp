@@ -299,7 +299,7 @@ function AssessmentForm({ activity, group, factor, onSave }) {
           </div>
           <h2>{factor.name}</h2>
         </div>
-        <Badge tone="amber">Draft</Badge>
+        <Badge tone="amber">Provisional</Badge>
       </div>
       <form
         className="panel-body form-stack"

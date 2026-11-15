@@ -302,6 +302,7 @@ export function assessActivity(
     throw new Error("A linked evidence record is no longer available.");
   return {
     ...invalidateReview(activity),
+    reviewStatus: "In review",
     assessments: {
       ...activity.assessments,
       [factorId]: {

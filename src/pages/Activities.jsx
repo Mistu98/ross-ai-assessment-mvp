@@ -154,7 +154,10 @@ function Profile({ activity, onDeleted }) {
           title={`${activity.code} · Activity details`}
           subtitle="Capture a specific, assessable unit of work."
         >
-          <StatusBadge status={activity.reviewStatus} />
+          <span className="profile-assessment-status">
+            <span>Assessment</span>
+            <StatusBadge status={activity.reviewStatus} />
+          </span>
         </SectionHeading>
         <form className="panel-body form-stack" onSubmit={save}>
           <label>
