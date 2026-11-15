@@ -133,3 +133,9 @@ The six provisional starter groupings can grow or shrink. The dashboard, rubric,
 Open **Method & concepts → Method versions** to **Export method definition** or **Load method JSON**. A method-only export contains definitions and literature, not engineering activities or evidence. A reviewed import previews count changes and affected assessments before application. Missing definitions are archived; changed criteria and linked literature require reapplication; new factor IDs receive blank assessments. A full **Export JSON** remains the backup for earlier workspace snapshots.
 
 See [the method file contract and update examples](docs/ADAPTABLE-METHOD.md). Imports update the current browser workspace. Publication of shared defaults and automatic KNIME synchronization remain future work; updating the repository concept file alone does not change groupings.
+
+## Upload status and deploy-preview troubleshooting
+
+Supporting files remain attached while an activity is Draft. The evidence panel shows attached records separately from current human assessments and provides a direct rubric link. Recording an assessment starts **In review**; **Reviewed** still requires an explicit named review of all current factors. An undecodable image has a fallback and remains downloadable/replaceable.
+
+See [evidence and preview troubleshooting](docs/EVIDENCE-TROUBLESHOOTING.md) for Netlify Drawer compatibility and transferring a workspace between preview hostnames with Export/Restore JSON.

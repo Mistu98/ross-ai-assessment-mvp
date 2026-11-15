@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   initialWorkspace,
+  invalidateReview,
   GROUPS,
   assessActivity,
   coverage,
@@ -91,6 +92,27 @@ test("Present evidence with an open condition still triggers a follow-up", () =>
   assert.equal(recommendations(resolved)[0].unresolved, false);
   assert.equal(coverage(resolved).percent, 17);
 });
+test("uploads remain Draft while a recorded assessment starts human review", () => {
+  const draft = initialWorkspace().activities[0];
+  const uploaded = invalidateReview({
+    ...draft,
+    evidence: [{ id: "synthetic-upload" }],
+  });
+  assert.equal(uploaded.reviewStatus, "Draft");
+  const assessed = assessActivity(uploaded, "validation", {
+    status: "Present",
+    rationale: "Synthetic human observation",
+    evidenceIds: ["synthetic-upload"],
+    condition: "",
+  });
+  assert.equal(assessed.reviewStatus, "In review");
+  assert.equal(assessed.evidence[0].id, "synthetic-upload");
+  assert.throws(
+    () => reviewActivity(assessed, "Fixture reviewer"),
+    /active groupings/,
+  );
+});
+
 test("review is an explicit human checkpoint and evidence edits invalidate it", () => {
   let activity = initialWorkspace().activities[0];
   assert.throws(() => reviewActivity(activity, "Reviewer"), /active groupings/);
