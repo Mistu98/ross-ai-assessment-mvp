@@ -71,14 +71,14 @@ test("applying A1 preserves artifacts and rationale while requiring reassessment
   assert.throws(() => applyPreparedA1Profile(w.activities[1]), /A1 only/);
 });
 
-test("A2 is a complete proposed DevOps profile and can replace only its own saved fields", () => {
+test("A2 documents the report pilot and can replace only its own saved fields", () => {
   const w = initialWorkspace();
   const a2 = w.activities[1];
   for (const [field, value] of Object.entries(A2_PROFILE)) {
     assert.equal(a2[field], value);
     assert.doesNotMatch(value, /not documented|\[[^\]]+\]/i);
   }
-  assert.match(a2.description, /Proposed DevOps operating profile/);
+  assert.match(a2.description, /Cloudbreak is a pilot, not production-wide/);
   assert.equal(a2.reviewStatus, "Draft");
   assert.equal(coverage(a2, w.method).recorded, 0);
   const old = {
@@ -113,15 +113,15 @@ test("A2 is a complete proposed DevOps profile and can replace only its own save
   );
 });
 
-test("A3 preserves the observed AI comment separately from proposed human verification", () => {
+test("A3 separates current advisory review from future enforcement", () => {
   const w = initialWorkspace(),
     a3 = w.activities[2];
   for (const [field, value] of Object.entries(A3_PROFILE)) {
     assert.equal(a3[field], value);
     assert.doesNotMatch(value, /not documented|\[[^\]]+\]/i);
   }
-  assert.match(a3.description, /source label of “medium\/security”/);
-  assert.match(a3.description, /proposed DevOps review workflow/);
+  assert.match(a3.description, /validated accuracy, false-positive/);
+  assert.match(a3.description, /future merge-blocking is not operational/);
   assert.equal(a3.reviewStatus, "Draft");
   assert.equal(coverage(a3, w.method).recorded, 0);
   assert.equal(a3.evidence.length, 0);

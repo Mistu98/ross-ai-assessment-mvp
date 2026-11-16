@@ -31,7 +31,7 @@ for (const [id, profile, index] of [
     await page.goto(`/#/activities?activity=${id}`);
     await expectFields(page, profile);
     await expect(page.locator(".profile-assessment-status")).toContainText(
-      "Draft",
+      "In review",
     );
     await page
       .getByRole("button", { name: "Save profile", exact: true })

@@ -1,0 +1,530 @@
+{
+  "version": "report-2026-11-13-provisional",
+  "source": "Report 13 November 2026",
+  "method": {
+    "revision": 1,
+    "release": {
+      "version": "report-2026-11-13-provisional",
+      "source": "Report 13 November 2026, Chapter 2 (Tables 4–5) and Section 4.3 (Table 17); provisional research method.",
+      "importedAt": ""
+    },
+    "updatedAt": null,
+    "history": [],
+    "groups": [
+      {
+        "id": "activity-readiness",
+        "name": "Activity Complexity & Engineering Readiness",
+        "short": "Activity readiness",
+        "prompt": "Activity scope and engineering readiness",
+        "category": "Technical controls",
+        "icon": "layers",
+        "archived": false,
+        "factors": [
+          {
+            "id": "activity-readiness",
+            "name": "Activity scope and engineering readiness",
+            "question": "What evidence establishes activity scope and engineering readiness for this activity?",
+            "action": "Confirm activity scope and engineering readiness",
+            "guidance": "Review the linked evidence, document remaining conditions, and retain human responsibility for the decision.",
+            "rule": "R01",
+            "revision": 1,
+            "archived": false,
+            "conceptIds": ["C01", "C03"],
+            "rubric": {
+              "Lower / More Bounded": "Bounded activity; limited dependencies; required environment and validation mechanisms are available",
+              "Intermediate": "Activity spans multiple components or depends on repository/environment conditions that are partly established",
+              "Higher / More Demanding": "Broad or multi-stage activity with substantial repository/environment dependence or insufficient readiness"
+            }
+          }
+        ]
+      },
+      {
+        "id": "workflow-context",
+        "name": "Context & Workflow Integration",
+        "short": "Context & workflow",
+        "prompt": "Context dependence and AI workflow integration",
+        "category": "Technical controls",
+        "icon": "file",
+        "archived": false,
+        "factors": [
+          {
+            "id": "workflow-context",
+            "name": "Context dependence and AI workflow integration",
+            "question": "What evidence establishes context dependence and ai workflow integration for this activity?",
+            "action": "Establish the context and workflow handoffs",
+            "guidance": "Review the linked evidence, document remaining conditions, and retain human responsibility for the decision.",
+            "rule": "R02",
+            "revision": 1,
+            "archived": false,
+            "conceptIds": ["C02", "C04"],
+            "rubric": {
+              "Lower / More Bounded": "AI requires limited, clearly defined context and performs a bounded supporting role",
+              "Intermediate": "AI depends on broader project/repository context or participates in multiple workflow stages",
+              "Higher / More Demanding": "AI requires extensive distributed context or is deeply integrated across connected engineering stages"
+            }
+          }
+        ]
+      },
+      {
+        "id": "validation-adequacy",
+        "name": "Quality Risk & Validation Adequacy",
+        "short": "Validation adequacy",
+        "prompt": "Validation strength relative to expected failure conditions",
+        "category": "Validation",
+        "icon": "check",
+        "archived": false,
+        "factors": [
+          {
+            "id": "validation-adequacy",
+            "name": "Validation strength relative to expected failure conditions",
+            "question": "What evidence establishes validation strength relative to expected failure conditions for this activity?",
+            "action": "Check validation against the changed behaviour",
+            "guidance": "Review the linked evidence, document remaining conditions, and retain human responsibility for the decision.",
+            "rule": "R03",
+            "revision": 1,
+            "archived": false,
+            "conceptIds": ["C05", "C07"],
+            "rubric": {
+              "Lower / More Bounded": "Relevant failure conditions are addressed by defined validation evidence",
+              "Intermediate": "Validation exists but coverage, thresholds, or adequacy are only partly established",
+              "Higher / More Demanding": "Validation is insufficient, unclear, or does not address material expected failure conditions"
+            }
+          }
+        ]
+      },
+      {
+        "id": "cross-cutting-controls",
+        "name": "Cross-Cutting Quality & Control Mechanisms",
+        "short": "Quality controls",
+        "prompt": "Additional assurance and recovery controls",
+        "category": "Technical controls",
+        "icon": "shield",
+        "archived": false,
+        "factors": [
+          {
+            "id": "cross-cutting-controls",
+            "name": "Additional assurance and recovery controls",
+            "question": "What evidence establishes additional assurance and recovery controls for this activity?",
+            "action": "Confirm quality, security and recovery controls",
+            "guidance": "Review the linked evidence, document remaining conditions, and retain human responsibility for the decision.",
+            "rule": "R04",
+            "revision": 1,
+            "archived": false,
+            "conceptIds": ["C06A", "C06B", "C08", "C11", "C13", "C14"],
+            "rubric": {
+              "Lower / More Bounded": "Relevant quality/security controls, iterative feedback, recovery mechanisms, or independent checks are established",
+              "Intermediate": "Some controls are present but coverage or applicability is incomplete",
+              "Higher / More Demanding": "Material controls required by the activity are absent, unclear, or not evidenced"
+            }
+          }
+        ]
+      },
+      {
+        "id": "operational-autonomy",
+        "name": "Autonomy & Operational Control",
+        "short": "Operational autonomy",
+        "prompt": "AI authority, permissions, state-changing capability and traceability",
+        "category": "Autonomy",
+        "icon": "sliders",
+        "archived": false,
+        "factors": [
+          {
+            "id": "operational-autonomy",
+            "name": "AI authority, permissions, state-changing capability and traceability",
+            "question": "What evidence establishes ai authority, permissions, state-changing capability and traceability for this activity?",
+            "action": "Document permissions and state-changing boundaries",
+            "guidance": "Review the linked evidence, document remaining conditions, and retain human responsibility for the decision.",
+            "rule": "R05",
+            "revision": 1,
+            "archived": false,
+            "conceptIds": ["C10", "C12"],
+            "rubric": {
+              "Lower / More Bounded": "AI is primarily advisory or operates with tightly bounded permissions and clear traceability",
+              "Intermediate": "AI performs limited state-changing actions within defined boundaries",
+              "Higher / More Demanding": "AI can perform consequential state-changing actions with broad permissions or insufficient operational boundaries/traceability"
+            }
+          }
+        ]
+      },
+      {
+        "id": "human-approval",
+        "name": "Human Oversight & Approval",
+        "short": "Human approval",
+        "prompt": "Placement and strength of human review",
+        "category": "Human oversight",
+        "icon": "users",
+        "archived": false,
+        "factors": [
+          {
+            "id": "human-approval",
+            "name": "Placement and strength of human review",
+            "question": "What evidence establishes placement and strength of human review for this activity?",
+            "action": "Establish required human review and approval",
+            "guidance": "Review the linked evidence, document remaining conditions, and retain human responsibility for the decision.",
+            "rule": "R06",
+            "revision": 1,
+            "archived": false,
+            "conceptIds": ["C09"],
+            "rubric": {
+              "Lower / More Bounded": "Human review/approval occurs before consequential actions or acceptance",
+              "Intermediate": "Human involvement exists but timing, responsibility, or mandatory status is partly defined",
+              "Higher / More Demanding": "Consequential activity may proceed with limited, unclear, or no required human approval"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "evidence": {
+    "E01": {
+      "name": "Organization-level Jira AI-usage analysis",
+      "observation": "Approximately 4,070 Jira-linked tickets were examined from June–October 2026. AI-attributed work appeared across bugs, features, general tasks, technical debt, and spike/research work, with bugs representing the largest volume.",
+      "limitation": "Descriptive organization-level evidence. Does not establish effects on productivity, quality, or engineering risk; attribution and cost measures have methodological limitations.",
+      "relevance": "Establishes organizational relevance of A1 and provides broader context for activity selection."
+    },
+    "E02": {
+      "name": "Cloudbreak AI-supported TDD workflow",
+      "observation": "Cloudbreak is being piloted to explore agent-supported planning, implementation, testing, review, and iteration.",
+      "limitation": "Not production wide. Repository scope, permissions, and validation thresholds remain under refinement.",
+      "relevance": "Primary evidence for A2."
+    },
+    "E03": {
+      "name": "AI Code Reviewer",
+      "observation": "The AI Code Reviewer currently provides advisory pull-request review and can identify potential bugs or concerns.",
+      "limitation": "Cannot independently approve or merge; human review remains required. Future merge-blocking capability is not currently operational.",
+      "relevance": "Primary evidence for A3."
+    },
+    "E04": {
+      "name": "Repository and agent-readiness output and playbook metrics",
+      "observation": "Provides evidence of engineering readiness, validation infrastructure, integrations, review mechanisms, and playbook adoption.",
+      "limitation": "Confirmed for the A1 repository. Readiness metrics indicate control presence, not adequacy or effectiveness.",
+      "relevance": "Contextual evidence for A1 and broader readiness context."
+    },
+    "E05": {
+      "name": "Representative AI-assisted bug-fix case",
+      "observation": "the representative bug-fix case provides evidence of AI-assisted implementation, automated review, CI/static-analysis validation, merge, closure, and release. the non-AI comparator provides a non-AI comparator.",
+      "limitation": "The the representative bug-fix case sizing change ultimately had no effective automated regression guard. It represents a specific activity example rather than organization-wide practice.",
+      "relevance": "Primary activity-specific evidence for A1."
+    }
+  },
+  "activities": [
+    {
+      "code": "A1",
+      "title": "AI-Assisted Bug Fixing",
+      "owner": "Human developer — implementation and merge responsibility; case-specific formal approval remains unclear.",
+      "tool": "Coding assistant and repository-supported AI; PR workflow, CI/static analysis and automated reviewers. Model/version not specified.",
+      "description": "SOURCE AND SCOPE\nReport 13 November 2026, Section 4.2. This profile summarizes report findings, not a new execution or a verified live repository state.\n\nPURPOSE\nResolve an identified software defect through AI-assisted implementation within the established development and review workflow.\n\nTRIGGER / INPUT\nA reported software defect documented through a Jira ticket.\n\nREPRESENTATIVE EXAMPLE\nthe representative bug-fix case: UI defect involving an icon-only button and dropdown caret rendering off-centre.\n\nINTENDED OUTCOME\nCorrect the identified defect so that the component renders with the expected positioning and sizing.\n\nAI ROLE\nAI contributed directly to implementation. The first two commits were co-authored by a coding assistant, and repository-supported AI capabilities were also used in pull-request documentation and responses.\n\nHUMAN ROLE\nA human developer remained responsible for the activity and merged the pull request. Human review is required before merge, but a separate formal approval was not evident in the representative bug-fix case, representing a case-specific evidence limitation rather than standard practice.\n\nPRIMARY EVIDENCE\nE01 and E05\n\nCONTEXTUAL EVIDENCE\nE04 and stakeholder clarification\n\nCURRENT EVIDENCE COMPLETENESS\nSubstantially evidenced, with remaining limitations concerning exact AI permission boundaries and some workflow-control details.\n\nVALIDATION LIMITATION\nCI and static-analysis checks passed, but the changed sizing behaviour lacked an effective automated regression guard; one CI integration was skipped. The case does not separately establish formal human approval, despite the broader requirement for human review.",
+      "evidenceRefs": ["E01", "E04", "E05"],
+      "findings": [
+        {
+          "factorId": "activity-readiness",
+          "status": "Present",
+          "rationale": "The activity concerned a bounded UI defect with a defined problem, implementation target, and expected outcome. E04 was confirmed to relate to the same repository and provided information concerning the surrounding engineering-readiness context.",
+          "condition": "E04 includes both current-state readiness information and future improvement considerations; target-state capabilities are not assumed to be operational.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 12 (A1); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E01", "E05", "E04"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "The representative defect is bounded, and repository-level readiness evidence is available, but the complete readiness of the surrounding environment is only partly established.",
+          "clarification": false
+        },
+        {
+          "factorId": "workflow-context",
+          "status": "Partial",
+          "rationale": "AI participated directly in implementation, including co-authored commits and repository-supported assistance with pull-request information and responses. The activity proceeded from Jira issue through implementation, review, validation, merge, verification, and release.",
+          "condition": "The available evidence does not fully establish the complete context provided to the AI or all mechanisms through which repository and project context were acquired.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 12 (A1); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E05"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "AI participates directly in implementation and pull-request activities, but the complete task, repository, and project context available to the AI is not fully established.",
+          "clarification": true
+        },
+        {
+          "factorId": "validation-adequacy",
+          "status": "Present",
+          "rationale": "In the representative bug-fix case, CI and static-analysis checks passed, but the specific sizing behaviour lacked an effective automated regression test. The broader workflow also includes AI Code Reviewer feedback, agent remediation, Jenkins regression testing, human review, and team-dependent Black Duck or Coverity scans.",
+          "condition": "The specific sizing behaviour lacked effective automated regression coverage, and one CI integration was skipped. The evidence does not establish which additional validation controls were applied to this change.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 12 (A1); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E05"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "CI and static-analysis checks passed, but the specific sizing behaviour ultimately lacked an effective automated regression guard.",
+          "clarification": true
+        },
+        {
+          "factorId": "cross-cutting-controls",
+          "status": "Partial",
+          "rationale": "The activity included automated reviewers, CI, static analysis, quality-gate checks, and visual verification. Three automated reviewers participated in the pull-request process.",
+          "condition": "The evidence establishes several controls but does not fully establish rollback, recovery, permission guardrails, or the applicability of all repository-level controls represented in E04.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 12 (A1); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E05"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "Automated reviewers, CI, static analysis, quality gates, and visual verification were present, but some control areas and recovery mechanisms remain incompletely established.",
+          "clarification": false
+        },
+        {
+          "factorId": "operational-autonomy",
+          "status": "Partial",
+          "rationale": "AI agents work within bounded tickets, implement code changes, create or update pull requests, and respond to review feedback. Human developers retain approval and merge authority.",
+          "condition": "Exact repository permissions and agent execution boundaries remain under refinement.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 12 (A1); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E05"],
+          "rubricLevel": "Unresolved pending clarification",
+          "rubricRationale": "AI agents can implement changes and update pull requests but cannot independently approve or merge them. Exact repository permissions and execution boundaries remain under refinement.",
+          "clarification": true
+        },
+        {
+          "factorId": "human-approval",
+          "status": "Present",
+          "rationale": "The pull request received three automated reviews but no separate formal human approval. The recorded review decision remained “Review required,” and the human author ultimately merged the change.",
+          "condition": "The case record does not clearly establish a separate approval step. Stakeholder clarification confirms that human review before merge is part of the broader workflow.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 12 (A1); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E05"],
+          "rubricLevel": "Unresolved pending clarification",
+          "rubricRationale": "Human review before merge is established, but the the representative bug-fix case record does not clearly document the case-specific approval step.",
+          "clarification": true
+        }
+      ],
+      "recommendations": {
+        "Validation": "Retain existing CI, static-analysis, and Jenkins regression testing. Verify that regression coverage addresses the changed behaviour and clarify when additional security scans are required.",
+        "Autonomy": "Retain bounded AI assistance for implementation. Do not assume independent merge or deployment authority while AI permissions and state-changing boundaries remain unresolved.",
+        "Technical controls": "Establish or confirm scoped repository permissions, change traceability, and rollback procedures. Record AI involvement in the change history.",
+        "Human oversight": "Confirm scoped repository permissions, change traceability, and rollback procedures. Record AI involvement in the change history."
+      },
+      "escalation": "Escalate when: Regression coverage is inadequate, the change extends beyond the defined scope, AI authority expands, or a consequential change lacks appropriate approval."
+    },
+    {
+      "code": "A2",
+      "title": "Agent-Supported Development and Build-and-Test Workflow",
+      "owner": "Pilot workflow owner and human plan/final reviewer — named accountable individuals are not identified in the report.",
+      "tool": "Cloudbreak AI-supported TDD pilot; agent planning, implementation and iterative build/test. Exact tools, permissions and thresholds remain under refinement.",
+      "description": "SOURCE AND SCOPE\nReport 13 November 2026, Section 4.2. This profile summarizes report findings, not a new execution or a verified live repository state.\n\nROSS ARTIFACT / EXAMPLE\nE02 – Cloudbreak AI-supported TDD workflow \n\nPURPOSE\nSupport the progression of an engineering task from specification and planning through implementation, testing, review, and preparation for shipment using agent assistance.\n\nTRIGGER / INPUT\nA defined engineering specification or task.\n\nINTENDED OUTCOME\nA software change that has progressed through iterative implementation, validation, and review before shipment.\n\nAI ROLE\nThe agent participates in planning and performs iterative implementation and build-and-test work using validation feedback.\n\nHUMAN ROLE\nHuman involvement is shown at decision points including plan approval and review of the resulting work.\n\nPRIMARY EVIDENCE\nE02\n\nCONTEXTUAL EVIDENCE\nStakeholder clarification confirming that Cloudbreak is currently a pilot exploring practical levels of agent autonomy and is not production-wide.\n\nCURRENT EVIDENCE COMPLETENESS\nPartial, with remaining uncertainty concerning exact permissions, validation thresholds, repository applicability, and state-changing authority.\n\nAPPLICABILITY\nCloudbreak is a pilot, not production-wide deployment. E04 readiness findings belong to A1 and are not applied to this pilot. The diagram illustrates the operating approach; it is not evidence of a successful shipment or measured acceleration.",
+      "evidenceRefs": ["E02"],
+      "findings": [
+        {
+          "factorId": "activity-readiness",
+          "status": "Partial",
+          "rationale": "A2 spans specification, planning, implementation, build/test, review, and shipment, making it broader than an isolated AI-assisted coding task. The workflow depends on an engineering environment capable of supporting iterative implementation and validation.",
+          "condition": "Cloudbreak remains a pilot, and the repositories and engineering environments to which it will ultimately apply are still being refined",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 14 (A2); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E02"],
+          "rubricLevel": "Higher / More Demanding",
+          "rubricRationale": "The Cloudbreak pilot explores planning, implementation, iterative build-and-test, and review across connected stages, requiring broader engineering readiness. Progression toward shipment remains under refinement.",
+          "clarification": true
+        },
+        {
+          "factorId": "workflow-context",
+          "status": "Partial",
+          "rationale": "AI is integrated directly into the workflow from planning through implementation and testing. A defined specification provides the initial task context, and agent-supported work continues across multiple workflow stages.",
+          "condition": "The complete repository, project, and system context available to the agent and the mechanisms through which that context is acquired are not fully established.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 14 (A2); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E02"],
+          "rubricLevel": "Higher / More Demanding",
+          "rubricRationale": "The pilot integrates AI across connected development stages and depends on broader repository and workflow context to plan, implement, validate, and refine changes.",
+          "clarification": false
+        },
+        {
+          "factorId": "validation-adequacy",
+          "status": "Partial",
+          "rationale": "Validation is built into the workflow through iterative build-and-test cycles and validation feedback before review and shipment.",
+          "condition": "Specific tests, acceptance thresholds, failure conditions, and criteria for allowing the activity to proceed are still being refined.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 14 (A2); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E02"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "Iterative validation is incorporated into the workflow, but specific tests, thresholds, and readiness criteria remain under refinement.",
+          "clarification": true
+        },
+        {
+          "factorId": "cross-cutting-controls",
+          "status": "Partial",
+          "rationale": "Iterative refinement based on validation feedback is explicitly incorporated into the workflow. Human review also provides an additional control point before shipment.",
+          "condition": "The available evidence does not fully establish security checks, rollback and recovery mechanisms, automated oversight, or other technical guardrails that may apply during operation.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 14 (A2); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E02"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "Iterative validation and human review are incorporated into the workflow, while additional technical guardrails, recovery mechanisms, and independent controls remain partly established.",
+          "clarification": false
+        },
+        {
+          "factorId": "operational-autonomy",
+          "status": "Partial",
+          "rationale": "The agent participates across several connected engineering stages, indicating greater operational involvement than advisory AI use. The pilot is specifically intended to explore practical levels of agent autonomy.",
+          "condition": "Exact repository permissions, execution boundaries, write authority, merge authority, and other state-changing permissions remain under refinement.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 14 (A2); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E02"],
+          "rubricLevel": "Unresolved pending clarification",
+          "rubricRationale": "The agent performs multiple connected engineering activities, but repository permissions, write authority, merge authority, and other state-changing boundaries remain under refinement.",
+          "clarification": true
+        },
+        {
+          "factorId": "human-approval",
+          "status": "Present",
+          "rationale": "Human involvement is explicitly represented through plan approval and review before the workflow progresses toward shipment.",
+          "condition": "Human checkpoints are represented in the pilot, but their mandatory enforcement and consistent application across repositories have not been established as production-wide controls.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 14 (A2); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E02"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "Human approval and review checkpoints are represented in the pilot, but their mandatory enforcement and application across repositories remain under refinement.",
+          "clarification": false
+        }
+      ],
+      "recommendations": {
+        "Validation": "Retain iterative build-and-test feedback. Assess the activity against the common readiness baseline and determine whether broader autonomy requires additional activity-specific validation.",
+        "Autonomy": "Maintain controlled pilot autonomy until repository scope, permissions, validation thresholds, and operating boundaries are established. Consider expanded autonomy only after these conditions are evaluated.",
+        "Technical controls": "Define execution boundaries, tool permissions, traceability, monitoring, failure-handling procedures, and recovery or rollback mechanisms appropriate to the pilot environment.",
+        "Human oversight": "Preserve the documented human approval checkpoints in the proposed operating workflow. Confirm their mandatory status, responsible roles, and enforcement mechanisms before broader operational deployment."
+      },
+      "escalation": "Escalate when: An agent acts outside its authorized scope, validation fails or becomes inconclusive, recovery is uncertain, or the workflow is proposed for broader operational use."
+    },
+    {
+      "code": "A3",
+      "title": "AI-Assisted Code Review",
+      "owner": "Human PR author and designated reviewer — final approval and merge remain human responsibilities.",
+      "tool": "AI Code Reviewer / Whetstone in the PR workflow; advisory only. Model/version and full available review context are not specified.",
+      "description": "SOURCE AND SCOPE\nReport 13 November 2026, Section 4.2. This profile summarizes report findings, not a new execution or a verified live repository state.\n\nROSS ARTIFACT / EXAMPLE\nAI Code Reviewer pull-request example\n\nPURPOSE\nExamine a proposed software change and identify potential issues that may require correction or further human review before the change proceeds.\n\nTRIGGER / INPUT\nA proposed code change submitted through the pull-request review workflow.\n\nINTENDED OUTCOME\nProvide review feedback that helps identify issues in a software change before approval or integration.\n\nAI ROLE\nThe AI acts as a reviewer by examining the proposed change and generating issue-specific review feedback.\n\nHUMAN ROLE\nHuman review remains required, and final approval and merge authority remain with human participants.\n\nPRIMARY EVIDENCE\nE03\n\nCONTEXTUAL EVIDENCE\nStakeholder clarification concerning the reviewer’s current advisory role, human-review requirement, and potential future enforcement capabilities.\n\nCURRENT EVIDENCE COMPLETENESS\nPartial. The current operating role and authority are established, while reviewer accuracy, coverage, context availability, and effectiveness across different change types remain incompletely evidenced.\n\nEFFECTIVENESS AND AUTHORITY\nReviewer-correctness telemetry, developer feedback and external-tool comparisons are emerging, but a validated accuracy, false-positive, missed-issue and coverage baseline is unavailable. The reviewer cannot independently approve or merge. Proposed future merge-blocking is not operational.",
+      "evidenceRefs": ["E03"],
+      "findings": [
+        {
+          "factorId": "activity-readiness",
+          "status": "Partial",
+          "rationale": "The activity operates within a pull-request review environment and requires access to a proposed software change and sufficient engineering context to evaluate it. E03 demonstrates the reviewer operating on a specific pull-request example.",
+          "condition": "The evidence does not establish the range or complexity of software changes the reviewer can reliably assess or the engineering-readiness requirements across repositories.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 16 (A3); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E03"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "The activity is bounded to pull-request review, but effective operation depends on sufficient repository and change context, with broader readiness requirements only partly established.",
+          "clarification": false
+        },
+        {
+          "factorId": "workflow-context",
+          "status": "Partial",
+          "rationale": "The AI reviewer is integrated into the pull-request workflow and generates feedback directly within the review process.",
+          "condition": "The complete repository, project, dependency, or historical context available to the reviewer and the mechanism used to obtain that context are not fully established.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 16 (A3); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E03"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "AI is integrated directly into the pull-request workflow, but the full context available to the reviewer is not established.",
+          "clarification": false
+        },
+        {
+          "factorId": "validation-adequacy",
+          "status": "Partial",
+          "rationale": "The AI Code Reviewer generates issue-specific feedback. Ross also collects reviewer-correctness telemetry, developer feedback, and comparative results from external review tools to evaluate finding quality and coverage.",
+          "condition": "Effectiveness measures remain under development, without a validated baseline for accuracy, false positives, missed issues, or coverage across repositories and change types.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 16 (A3); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E03"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "AI review provides an additional quality check, supported by emerging effectiveness telemetry, but validated accuracy, coverage, and false-positive baselines remain unavailable.",
+          "clarification": true
+        },
+        {
+          "factorId": "cross-cutting-controls",
+          "status": "Partial",
+          "rationale": "The AI Code Reviewer provides an additional automated quality-control mechanism within the pull-request workflow. Its findings remain advisory and subject to human review.",
+          "condition": "The effectiveness and independence of automated review controls have not yet been validated across repositories and change types.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 16 (A3); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E03"],
+          "rubricLevel": "Intermediate",
+          "rubricRationale": "AI review provides an additional quality-control mechanism, but the breadth of quality checking and relationship to other independent controls remain incompletely established.",
+          "clarification": true
+        },
+        {
+          "factorId": "operational-autonomy",
+          "status": "Present",
+          "rationale": "The AI Code Reviewer currently operates in an advisory capacity. It can generate findings and feedback but cannot independently approve or merge a pull request.",
+          "condition": "Potential future merge-blocking authority is not currently operational and should not be treated as part of the present-state activity.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 16 (A3); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E03"],
+          "rubricLevel": "Lower / More Bounded",
+          "rubricRationale": "The AI Code Reviewer is advisory and cannot independently approve or merge a pull request.",
+          "clarification": true
+        },
+        {
+          "factorId": "human-approval",
+          "status": "Present",
+          "rationale": "Human review remains required, and final approval and merge authority remain with human participants rather than the AI reviewer.",
+          "condition": "The evidence establishes the current oversight model but does not determine whether the same review requirements or escalation process apply uniformly across all repositories or change types.",
+          "sourceReference": "Report 13 November 2026, Section 4.2, Table 16 (A3); Section 4.3, Table 18 rubric comparison.",
+          "evidenceRefs": ["E03"],
+          "rubricLevel": "Lower / More Bounded",
+          "rubricRationale": "Human review remains required, and final approval and merge authority remain with human participants.",
+          "clarification": true
+        }
+      ],
+      "recommendations": {
+        "Validation": "Formalize existing reviewer-correctness telemetry, developer feedback, and external-tool comparisons to evaluate accuracy, false positives, missed issues, and coverage before introducing merge-blocking controls.",
+        "Autonomy": "Retain the current advisory-only role. Any future blocking, approval, or merge authority should require additional evidence and reassessment.",
+        "Technical controls": "Maintain review traceability and visibility of AI-generated findings. Define how findings are handled and how disagreements or uncertain outputs are escalated.",
+        "Human oversight": "Retain human responsibility for evaluating findings and making approval decisions. Avoid treating AI feedback as a substitute for required human review."
+      },
+      "escalation": "Escalate when: Reviewer findings are unreliable, consequential issues are missed, human review is bypassed, or the AI reviewer is proposed to receive blocking or decision-making authority."
+    }
+  ],
+  "triggers": [
+    {
+      "trigger": "Change in AI capability or operating mode",
+      "example": "An advisory AI reviewer gains merge-blocking capabilities, or an AI agent receives expanded execution authority.",
+      "implication": "Reassess authority boundaries, enforcement conditions, validation evidence, and human oversight."
+    },
+    {
+      "trigger": "Change in repository or development context",
+      "example": "An activity is applied to a repository with different dependencies or testing arrangements",
+      "implication": "Reassess contextual readiness and validation adequacy"
+    },
+    {
+      "trigger": "Change in validation mechanisms",
+      "example": "Validation tests, CI gates, or thresholds change, or validated reviewer-effectiveness measures become available.",
+      "implication": "Review assurance evidence and validation requirements"
+    },
+    {
+      "trigger": "Change in permissions or operational authority",
+      "example": "An agent receives broader tool access or permission to modify additional files",
+      "implication": "Reassess execution boundaries and technical controls"
+    },
+    {
+      "trigger": "New failure or quality evidence",
+      "example": "A recurring defect, missed review finding, or validation gap is identified",
+      "implication": "Reconsider quality risks and escalation requirements"
+    },
+    {
+      "trigger": "Change in workflow maturity",
+      "example": "A pilot workflow is proposed for broader operational use",
+      "implication": "Reassess operating controls and approval conditions"
+    },
+    {
+      "trigger": "New research, organizational evidence, or readiness standards",
+      "example": "New studies, Ross evidence, or playbook requirements change expected conditions",
+      "implication": "Determine whether the activity assessment or rubric remains adequate"
+    }
+  ],
+  "procedure": [
+    {
+      "step": "1. Identify the change",
+      "procedure": "Document the trigger, affected activity, and relevant changes in the engineering environment or evidence.",
+      "output": "Reassessment record"
+    },
+    {
+      "step": "2. Refresh evidence",
+      "procedure": "Collect updated workflow documentation, repository information, validation results, operational records, and stakeholder clarification where necessary.",
+      "output": "Updated evidence register"
+    },
+    {
+      "step": "3. Update the activity profile",
+      "procedure": "Compare new evidence with the existing profile and revise conditions classified as Present, Partial, or Not evidenced.",
+      "output": "Revised activity profile"
+    },
+    {
+      "step": "4. Reapply the assessment rubric",
+      "procedure": "Evaluate the revised conditions using the established criteria and decision rules. Record changes and unresolved evidence gaps.",
+      "output": "Updated rubric assessment"
+    },
+    {
+      "step": "5. Review recommendations",
+      "procedure": "Determine whether the changes require stronger or reduced validation, modified AI authority, additional technical controls, or different human-review arrangements.",
+      "output": "Revised recommendation map"
+    },
+    {
+      "step": "6. Review and document decisions",
+      "procedure": "Record the evidence, rationale, assessment version, decisions requiring stakeholder approval, and the next reassessment trigger.",
+      "output": "Versioned assessment and decision record"
+    }
+  ]
+}

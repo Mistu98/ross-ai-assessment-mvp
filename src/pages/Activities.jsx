@@ -150,6 +150,18 @@ function Profile({ activity, onDeleted }) {
     updateActivity(
       invalidateReview({
         ...activity,
+        assessments: Object.fromEntries(
+          Object.entries(activity.assessments).map(([id, record]) => [
+            id,
+            record.recorded &&
+            (title !== activity.title ||
+              data.get("description").trim() !== activity.description ||
+              data.get("owner").trim() !== activity.owner ||
+              data.get("tool").trim() !== activity.tool)
+              ? { ...record, needsReapplication: true }
+              : record,
+          ]),
+        ),
         title,
         description: data.get("description").trim(),
         owner: data.get("owner").trim(),
@@ -160,6 +172,18 @@ function Profile({ activity, onDeleted }) {
   }
   return (
     <>
+      {activity.reportCase && (
+        <div className="source-citation">
+          <strong>{activity.reportCase} · Report-derived profile</strong>
+          <p>
+            Section 4.2 documents the activity context and evidence limitations.
+            Supporting records below are editable report summaries; original
+            screenshots are not attached. Add files to the relevant record and
+            link them explicitly in the rubric. Uploads do not assign evidence
+            statuses.
+          </p>
+        </div>
+      )}
       {prepared && !hasPreparedProfile(activity) && (
         <div className="info-box page-info">
           <Info size={19} />

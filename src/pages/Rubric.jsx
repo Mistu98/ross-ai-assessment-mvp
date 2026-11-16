@@ -21,6 +21,7 @@ import {
   allFactors,
   blankAssessment,
   isCurrent,
+  RUBRIC_LEVELS,
 } from "../lib/method.js";
 import {
   Badge,
@@ -107,8 +108,14 @@ export default function Rubric() {
           </div>
           <div className="status-explainer">
             {[
-              ["Present", "Supporting evidence is documented."],
-              ["Partial", "Some support; a condition remains."],
+              [
+                "Present",
+                "Sources directly establish the assessed condition; limitations may remain.",
+              ],
+              [
+                "Partial",
+                "Some support exists; important detail or applicability remains unclear.",
+              ],
               [
                 "Not Evidenced",
                 "Supporting evidence has not been established.",
@@ -277,7 +284,11 @@ function AssessmentForm({ activity, group, factor, onSave }) {
   const { concepts } = useWorkspace(),
     initial =
       activity.assessments[factor.id] || blankAssessment(factor.revision),
-    [status, setStatus] = useState(initial.status),
+    [status, setStatus] = useState(initial.recorded ? initial.status : ""),
+    [rubricLevel, setRubricLevel] = useState(initial.rubricLevel || ""),
+    [rubricRationale, setRubricRationale] = useState(
+      initial.rubricRationale || "",
+    ),
     [rationale, setRationale] = useState(initial.rationale),
     [condition, setCondition] = useState(initial.condition),
     [assessor, setAssessor] = useState(initial.assessor || ""),
@@ -306,7 +317,18 @@ function AssessmentForm({ activity, group, factor, onSave }) {
         onSubmit={(event) => {
           event.preventDefault();
           try {
-            onSave({ status, rationale, condition, evidenceIds, assessor });
+            onSave({
+              status,
+              rationale,
+              condition,
+              evidenceIds,
+              assessor,
+              rubricLevel,
+              rubricRationale,
+              sourceReference: initial.sourceReference
+                ? `Human reapplication; original baseline: ${initial.sourceReference.replace(/^Human reapplication; original baseline: /, "")}`
+                : "Human-entered assessment",
+            });
             setError("");
           } catch (err) {
             setError(err.message);
@@ -324,6 +346,35 @@ function AssessmentForm({ activity, group, factor, onSave }) {
           </div>
         )}
         <p className="assessment-prompt">{factor.question}</p>
+        {initial.sourceReference && (
+          <p className="source-citation">
+            Source / provenance: {initial.sourceReference}. Report findings are
+            transcribed, not generated from attachments. A report record is not
+            a new app review sign-off.
+          </p>
+        )}
+        {factor.rubric && (
+          <details className="rule-details">
+            <summary>
+              Qualitative rubric definitions · report Section 4.3
+            </summary>
+            <dl className="rubric-definitions">
+              {Object.entries(factor.rubric).map(([label, text]) => (
+                <div key={label}>
+                  <dt>{label}</dt>
+                  <dd>{text}</dd>
+                </div>
+              ))}
+              <div>
+                <dt>Unresolved pending clarification</dt>
+                <dd>
+                  Insufficient evidence to place the activity against this
+                  criterion. Identify what must be clarified.
+                </dd>
+              </div>
+            </dl>
+          </details>
+        )}
         {outdated && (
           <details className="rule-details">
             <summary>Earlier criterion and source context</summary>
@@ -341,6 +392,18 @@ function AssessmentForm({ activity, group, factor, onSave }) {
                 {initial.factorSnapshot?.question ||
                   "An earlier criterion snapshot is not available in this imported record."}
               </p>
+              {initial.factorSnapshot?.rubric && (
+                <dl className="rubric-definitions">
+                  {Object.entries(initial.factorSnapshot.rubric).map(
+                    ([label, definition]) => (
+                      <div key={label}>
+                        <dt>{label}</dt>
+                        <dd>{definition}</dd>
+                      </div>
+                    ),
+                  )}
+                </dl>
+              )}
               {initial.factorSnapshot?.concepts.map((c) => (
                 <p key={c.id}>
                   {c.id} · {c.title} · {c.source || "Reference not supplied"}
@@ -382,6 +445,37 @@ function AssessmentForm({ activity, group, factor, onSave }) {
             ))}
           </div>
         </fieldset>
+        <div className="rubric-condition-panel">
+          <h3>Qualitative rubric condition</h3>
+          <p>
+            Assess the activity against the criterion separately. Evidence
+            status does not determine this selection; there is no numerical risk
+            score.
+          </p>
+          <label>
+            Rubric condition
+            <select
+              aria-label="Rubric condition"
+              value={rubricLevel}
+              onChange={(e) => setRubricLevel(e.target.value)}
+            >
+              <option value="">Not yet applied</option>
+              {RUBRIC_LEVELS.map((value) => (
+                <option key={value}>{value}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Rubric condition rationale
+            <textarea
+              rows={3}
+              maxLength={20000}
+              value={rubricRationale}
+              onChange={(e) => setRubricRationale(e.target.value)}
+              placeholder="Explain how the criterion applies, or what clarification is needed."
+            />
+          </label>
+        </div>
         <label>
           Written evidence & assessment rationale{" "}
           <span className="required-label">Required</span>

@@ -1,0 +1,96 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useWorkspace } from "../lib/workspace.jsx";
+import { prepareReportImport } from "../lib/reportImport.js";
+import { Modal, FormError } from "./ui.jsx";
+
+export default function ReportBaseline() {
+  const { workspace, concepts, commit, exportData } = useWorkspace();
+  const [pending, setPending] = useState(null),
+    [error, setError] = useState("");
+  if (workspace.activities.some((a) => a.reportCase))
+    return (
+      <div className="report-source-strip">
+        <strong>Report case study · 13 November 2026</strong>
+        <span>
+          Provisional method · report findings remain editable · original
+          artifacts are not bundled.
+        </span>
+        <Link to="/method?tab=versions">Method & provenance →</Link>
+      </div>
+    );
+  return (
+    <>
+      <div className="report-source-strip">
+        <div>
+          <strong>Report findings are available</strong>
+          <p>
+            Your saved workspace is retained. Preview the literature method and
+            three report cases.
+          </p>
+        </div>
+        <button
+          className="button button-secondary"
+          disabled={concepts.state !== "loaded"}
+          onClick={() => {
+            try {
+              setPending(prepareReportImport(workspace, concepts));
+              setError("");
+            } catch (e) {
+              setError(e.message);
+            }
+          }}
+        >
+          Preview report update
+        </button>
+      </div>
+      <FormError>{error}</FormError>
+      {pending && (
+        <Modal title="Review report update" onClose={() => setPending(null)}>
+          <div className="modal-body form-stack">
+            <p>
+              Load the report’s six provisional groupings, 15 mapped concepts,
+              three profiles and 18 documented evidence judgements, with
+              separate qualitative rubric conditions.
+            </p>
+            <p>
+              Your {workspace.activities.length} existing activities and their
+              files and judgements are retained. Report cases receive distinct
+              IDs/codes where necessary. Superseded method definitions are
+              archived; old judgements are not reinterpreted as findings for new
+              criteria.
+            </p>
+            <p>
+              Active groupings: {pending.summary.before} →{" "}
+              {pending.summary.after}. Source: Report 13 November 2026, Chapters
+              2–4. No new human sign-off or raw screenshot upload is implied.
+            </p>
+            <div className="modal-actions">
+              <button className="button button-secondary" onClick={exportData}>
+                Export current workspace
+              </button>
+              <button
+                className="button button-secondary"
+                onClick={() => setPending(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="button button-primary"
+                onClick={() => {
+                  commit(
+                    pending.workspace,
+                    "Report cases added; earlier work preserved",
+                  );
+                  setPending(null);
+                }}
+              >
+                Add report cases and method
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+    </>
+  );
+}

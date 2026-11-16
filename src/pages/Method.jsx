@@ -1,3 +1,4 @@
+import ReapplicationGuide from "../components/ReapplicationGuide.jsx";
 import { useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import {
@@ -118,7 +119,7 @@ export default function Method() {
     <>
       <PageHeading
         eyebrow="YOUR EDITABLE ASSESSMENT METHOD"
-        title="Method & concept editor"
+        title="Method & concepts"
         description="Manage the active groupings, assessment factors, literature records, and their mappings."
       >
         <button
@@ -161,8 +162,9 @@ export default function Method() {
             </span>
           </h2>
           <p>
-            {active.length} literature concepts supplied · {METHOD.version} ·
-            saved in this browser
+            {active.length} literature concepts supplied ·{" "}
+            {workspace.method.release?.version || METHOD.version} · saved in
+            this browser
           </p>
         </div>
         <Badge tone="amber" dot>
@@ -214,8 +216,10 @@ export default function Method() {
               <div>
                 <h2>Literature-derived concept library</h2>
                 <p>
-                  Add your own source records, then explicitly map them to one
-                  or more groupings.
+                  The report consolidates 40 reviewed studies into 15 concepts
+                  and six provisional groupings. Representative citations are
+                  supplied by the report; local definitions and mappings remain
+                  editable.
                 </p>
               </div>
               <Badge>
@@ -408,6 +412,13 @@ export default function Method() {
               <Badge tone="amber">Implementation draft</Badge>
             </div>
             <MethodTransfer />
+            <p className="source-citation">
+              Report baseline: 13 November 2026, Sections 3–4. The full report
+              and original engineering artifacts are not published with this
+              app. Source findings are transcribed with their limitations; no
+              new approval is asserted. C06A and C06B remain distinct concept
+              IDs.
+            </p>
             <div className="card version-card">
               <span className="version-marker">
                 <GitBranch size={20} />
@@ -554,6 +565,7 @@ export default function Method() {
                 GitHub is a separate reviewed publication step.
               </p>
             </div>
+            <ReapplicationGuide />
           </>
         )}
       </section>

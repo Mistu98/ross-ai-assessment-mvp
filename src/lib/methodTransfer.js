@@ -17,6 +17,7 @@ const criterion = (f) => [
   f.guidance,
   f.rule,
   [...f.conceptIds].sort(),
+  f.rubric || null,
   f.archived,
 ];
 const conceptDefinition = (c) =>
