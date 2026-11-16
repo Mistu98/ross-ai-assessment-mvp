@@ -13,9 +13,12 @@ import { useWorkspace } from "../lib/workspace.jsx";
 import {
   coverage,
   invalidateReview,
-  applyPreparedA1Profile,
+  applyPreparedProfile,
 } from "../lib/method.js";
-import { A1_PROFILE, hasPreparedA1Profile } from "../data/activityProfiles.js";
+import {
+  PREPARED_PROFILES,
+  hasPreparedProfile,
+} from "../data/activityProfiles.js";
 import {
   PageHeading,
   AssessmentJourney,
@@ -135,6 +138,7 @@ function Profile({ activity, onDeleted }) {
     [loadingPrepared, setLoadingPrepared] = useState(false),
     [profileLoadRevision, setProfileLoadRevision] = useState(0),
     [deleting, setDeleting] = useState(false);
+  const prepared = PREPARED_PROFILES[activity.id];
   function save(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget),
@@ -156,21 +160,21 @@ function Profile({ activity, onDeleted }) {
   }
   return (
     <>
-      {activity.id === "a1" && !hasPreparedA1Profile(activity) && (
+      {prepared && !hasPreparedProfile(activity) && (
         <div className="info-box page-info">
           <Info size={19} />
           <div>
             <p>
-              The repository includes prepared A1 details from the supplied case
-              material. Your saved profile is kept until you choose to load
-              them.
+              The repository includes prepared {activity.code} details from the
+              supplied case material. Your saved profile is kept until you
+              choose to load them.
             </p>
             <button
               type="button"
               className="text-button"
               onClick={() => setLoadingPrepared(true)}
             >
-              Load prepared A1 details
+              Load prepared {activity.code} details
             </button>
           </div>
         </div>
@@ -248,7 +252,7 @@ function Profile({ activity, onDeleted }) {
       </div>
       {loadingPrepared && (
         <Modal
-          title="Load prepared A1 details"
+          title={`Load prepared ${activity.code} details`}
           wide
           onClose={() => setLoadingPrepared(false)}
         >
@@ -260,7 +264,7 @@ function Profile({ activity, onDeleted }) {
               context changes. Save any current edits and export a backup first
               if you need the previous profile text.
             </p>
-            {Object.entries(A1_PROFILE).map(([field, value]) => (
+            {Object.entries(prepared).map(([field, value]) => (
               <label key={field}>
                 Repository{" "}
                 {field === "tool"
@@ -292,14 +296,14 @@ function Profile({ activity, onDeleted }) {
                 className="button button-primary"
                 onClick={() => {
                   updateActivity(
-                    applyPreparedA1Profile(activity),
-                    "Prepared A1 details loaded; evidence retained",
+                    applyPreparedProfile(activity),
+                    `Prepared ${activity.code} details loaded; evidence retained`,
                   );
                   setProfileLoadRevision((value) => value + 1);
                   setLoadingPrepared(false);
                 }}
               >
-                Apply A1 details
+                Apply {activity.code} details
               </button>
             </div>
           </div>

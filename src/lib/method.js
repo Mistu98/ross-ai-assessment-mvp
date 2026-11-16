@@ -1,4 +1,8 @@
-import { A1_PROFILE } from "../data/activityProfiles.js";
+import {
+  A1_PROFILE,
+  A2_PROFILE,
+  PREPARED_PROFILES,
+} from "../data/activityProfiles.js";
 // Working UI groupings only. Replace with the reviewed literature mapping after
 // the empty repository concept source is populated; these labels are not literature findings.
 export const METHOD = {
@@ -196,12 +200,11 @@ export function initialWorkspace() {
         owner: A1_PROFILE.owner,
         tool: A1_PROFILE.tool,
       },
-      makeActivity(
-        "a2",
-        "A2",
-        "Agent-supported development",
-        "Document an agent-supported development, build-and-test activity, including execution boundaries and approval checkpoints.",
-      ),
+      {
+        ...makeActivity("a2", "A2", A2_PROFILE.title, A2_PROFILE.description),
+        owner: A2_PROFILE.owner,
+        tool: A2_PROFILE.tool,
+      },
       makeActivity(
         "a3",
         "A3",
@@ -280,9 +283,15 @@ export const invalidateReview = (activity) => ({
 export function applyPreparedA1Profile(activity) {
   if (activity.id !== "a1")
     throw new Error("The prepared profile belongs to A1 only.");
+  return applyPreparedProfile(activity);
+}
+export function applyPreparedProfile(activity) {
+  const profile = PREPARED_PROFILES[activity.id];
+  if (!profile)
+    throw new Error("No prepared profile is available for this activity.");
   return {
     ...invalidateReview(activity),
-    ...A1_PROFILE,
+    ...profile,
     assessments: Object.fromEntries(
       Object.entries(activity.assessments).map(([id, record]) => [
         id,

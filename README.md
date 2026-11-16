@@ -145,3 +145,9 @@ See [evidence and preview troubleshooting](docs/EVIDENCE-TROUBLESHOOTING.md) for
 A1 starts with the supplied icon-only button/dropdown-caret case: title, ticket-assignee attribution, documented tool/environment gaps, and a sectioned description. The source text is maintained in `src/data/activityProfiles.js`; contextual readiness checks and comparative workflows are separated from case-specific results. No screenshots or inferred assessment findings are bundled.
 
 Existing browser workspaces keep their saved A1 fields. Open A1 and choose **Load prepared A1 details** to preview the repository text, export a backup, and apply it explicitly. Application changes only the four profile fields, keeps attachments and recorded rationale, and flags recorded assessments for reapplication. A2/A3 and method definitions are unaffected.
+
+## Prepared A2 DevOps operating profile
+
+A2 is fully populated from the specification-to-shipping diagram as a **proposed DevOps operating profile**: accountable roles, a proposed GitHub/CI and isolated validation stack, scope, inputs, agent permissions, human checkpoints, validation requirements, acceptance criteria, and evidence requirements. All four fields have complete text rather than placeholders. These are proposed operating decisions, not claims of an observed successful execution or measured acceleration.
+
+New workspaces use the A2 profile by default. Existing saved A2 records expose **Load prepared A2 details**, with preview, backup and explicit application. The shared prepared-profile loader retains attachments and rationale and flags recorded assessments for reapplication. A3 and the wider report/rubric alignment await the remaining supplied material.
