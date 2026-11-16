@@ -139,3 +139,9 @@ See [the method file contract and update examples](docs/ADAPTABLE-METHOD.md). Im
 Supporting files remain attached while an activity is Draft. The evidence panel shows attached records separately from current human assessments and provides a direct rubric link. Recording an assessment starts **In review**; **Reviewed** still requires an explicit named review of all current factors. An undecodable image has a fallback and remains downloadable/replaceable.
 
 See [evidence and preview troubleshooting](docs/EVIDENCE-TROUBLESHOOTING.md) for Netlify Drawer compatibility and transferring a workspace between preview hostnames with Export/Restore JSON.
+
+## Prepared A1 case profile
+
+A1 starts with the supplied icon-only button/dropdown-caret case: title, ticket-assignee attribution, documented tool/environment gaps, and a sectioned description. The source text is maintained in `src/data/activityProfiles.js`; contextual readiness checks and comparative workflows are separated from case-specific results. No screenshots or inferred assessment findings are bundled.
+
+Existing browser workspaces keep their saved A1 fields. Open A1 and choose **Load prepared A1 details** to preview the repository text, export a backup, and apply it explicitly. Application changes only the four profile fields, keeps attachments and recorded rationale, and flags recorded assessments for reapplication. A2/A3 and method definitions are unaffected.

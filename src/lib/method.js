@@ -1,3 +1,4 @@
+import { A1_PROFILE } from "../data/activityProfiles.js";
 // Working UI groupings only. Replace with the reviewed literature mapping after
 // the empty repository concept source is populated; these labels are not literature findings.
 export const METHOD = {
@@ -190,12 +191,11 @@ export function initialWorkspace() {
     updatedAt: null,
     conceptSource: null,
     activities: [
-      makeActivity(
-        "a1",
-        "A1",
-        "AI-assisted bug fixing",
-        "Document a bug-fixing activity: the problem, AI assistance used, code changes, validation, and human review.",
-      ),
+      {
+        ...makeActivity("a1", "A1", A1_PROFILE.title, A1_PROFILE.description),
+        owner: A1_PROFILE.owner,
+        tool: A1_PROFILE.tool,
+      },
       makeActivity(
         "a2",
         "A2",
@@ -277,6 +277,20 @@ export const invalidateReview = (activity) => ({
   reviewedAt: null,
   updatedAt: new Date().toISOString(),
 });
+export function applyPreparedA1Profile(activity) {
+  if (activity.id !== "a1")
+    throw new Error("The prepared profile belongs to A1 only.");
+  return {
+    ...invalidateReview(activity),
+    ...A1_PROFILE,
+    assessments: Object.fromEntries(
+      Object.entries(activity.assessments).map(([id, record]) => [
+        id,
+        record.recorded ? { ...record, needsReapplication: true } : record,
+      ]),
+    ),
+  };
+}
 export function assessActivity(
   activity,
   factorId,
