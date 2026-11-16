@@ -1,5 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { A1_PROFILE, A2_PROFILE } from "../../src/data/activityProfiles.js";
+import {
+  A1_PROFILE,
+  A2_PROFILE,
+  A3_PROFILE,
+} from "../../src/data/activityProfiles.js";
 import { initialWorkspace, assessActivity } from "../../src/lib/method.js";
 
 async function expectFields(page, profile) {
@@ -19,6 +23,7 @@ async function expectFields(page, profile) {
 for (const [id, profile, index] of [
   ["a1", A1_PROFILE, 0],
   ["a2", A2_PROFILE, 1],
+  ["a3", A3_PROFILE, 2],
 ]) {
   test(`fresh ${id.toUpperCase()} is fully populated and remains editable`, async ({
     page,

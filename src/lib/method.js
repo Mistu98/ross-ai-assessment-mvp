@@ -1,6 +1,7 @@
 import {
   A1_PROFILE,
   A2_PROFILE,
+  A3_PROFILE,
   PREPARED_PROFILES,
 } from "../data/activityProfiles.js";
 // Working UI groupings only. Replace with the reviewed literature mapping after
@@ -205,12 +206,11 @@ export function initialWorkspace() {
         owner: A2_PROFILE.owner,
         tool: A2_PROFILE.tool,
       },
-      makeActivity(
-        "a3",
-        "A3",
-        "AI-assisted code review",
-        "Document an AI-assisted code review activity, the review scope, and how findings are verified by a human reviewer.",
-      ),
+      {
+        ...makeActivity("a3", "A3", A3_PROFILE.title, A3_PROFILE.description),
+        owner: A3_PROFILE.owner,
+        tool: A3_PROFILE.tool,
+      },
     ],
   };
 }

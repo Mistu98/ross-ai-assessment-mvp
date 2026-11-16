@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { A1_PROFILE, A2_PROFILE } from "../src/data/activityProfiles.js";
+import {
+  A1_PROFILE,
+  A2_PROFILE,
+  A3_PROFILE,
+} from "../src/data/activityProfiles.js";
 import {
   initialWorkspace,
   applyPreparedA1Profile,
@@ -104,7 +108,40 @@ test("A2 is a complete proposed DevOps profile and can replace only its own save
   w.activities[1] = next;
   assert.deepEqual(validateWorkspace(JSON.parse(exportWorkspace(w))), w);
   assert.throws(
-    () => applyPreparedProfile(w.activities[2]),
+    () => applyPreparedProfile({ ...w.activities[2], id: "a4" }),
     /No prepared profile/,
   );
+});
+
+test("A3 preserves the observed AI comment separately from proposed human verification", () => {
+  const w = initialWorkspace(),
+    a3 = w.activities[2];
+  for (const [field, value] of Object.entries(A3_PROFILE)) {
+    assert.equal(a3[field], value);
+    assert.doesNotMatch(value, /not documented|\[[^\]]+\]/i);
+  }
+  assert.match(a3.description, /source label of “medium\/security”/);
+  assert.match(a3.description, /proposed DevOps review workflow/);
+  assert.equal(a3.reviewStatus, "Draft");
+  assert.equal(coverage(a3, w.method).recorded, 0);
+  assert.equal(a3.evidence.length, 0);
+  const earlier = assessActivity(
+    { ...a3, title: "Saved A3 title" },
+    "validation",
+    {
+      status: "Present",
+      rationale: "Synthetic prior review",
+      condition: "",
+      evidenceIds: [],
+    },
+    w.method,
+  );
+  const updated = applyPreparedProfile(earlier);
+  assert.equal(
+    updated.assessments.validation.rationale,
+    earlier.assessments.validation.rationale,
+  );
+  assert.equal(updated.assessments.validation.needsReapplication, true);
+  w.activities[2] = updated;
+  assert.deepEqual(validateWorkspace(JSON.parse(exportWorkspace(w))), w);
 });

@@ -150,4 +150,10 @@ Existing browser workspaces keep their saved A1 fields. Open A1 and choose **Loa
 
 A2 is fully populated from the specification-to-shipping diagram as a **proposed DevOps operating profile**: accountable roles, a proposed GitHub/CI and isolated validation stack, scope, inputs, agent permissions, human checkpoints, validation requirements, acceptance criteria, and evidence requirements. All four fields have complete text rather than placeholders. These are proposed operating decisions, not claims of an observed successful execution or measured acceleration.
 
-New workspaces use the A2 profile by default. Existing saved A2 records expose **Load prepared A2 details**, with preview, backup and explicit application. The shared prepared-profile loader retains attachments and rationale and flags recorded assessments for reapplication. A3 and the wider report/rubric alignment await the remaining supplied material.
+New workspaces use the A2 profile by default. Existing saved A2 records expose **Load prepared A2 details**, with preview, backup and explicit application. The shared prepared-profile loader retains attachments and rationale and flags recorded assessments for reapplication. The wider report/rubric alignment awaits the revised method definitions and human assessment findings.
+
+## Prepared A3 AI-assisted review profile
+
+A3 combines the visible Whetstone review comment with a complete proposed DevOps review procedure. Its four fields identify the review activity, accountable roles, Whetstone/GitHub/Python context, controlled validation requirements, human disposition, acceptance criteria, artifact requirements, and reapplication. The source PR capture is distinguished from this MVP's GitHub PR numbering. The AI tool's medium/security label is source metadata rather than a rubric risk score. No remediation, test success, human approval, or merge is inferred.
+
+New workspaces prefill A3. Existing workspaces use **Load prepared A3 details**, preserving evidence and earlier rationale and flagging recorded assessments for reapplication. All three profiles are now available for review; report-wide criteria/mapping changes and human evidence statuses still require the corresponding reviewed report content. Raw screenshots and code from the source PR are not bundled.
