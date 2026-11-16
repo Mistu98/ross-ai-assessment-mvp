@@ -1,3 +1,4 @@
+import { initialWorkspace } from "../../src/lib/method.js";
 import { test, expect } from "@playwright/test";
 async function openNav(page, label) {
   const opener = page.getByRole("button", {
@@ -63,7 +64,7 @@ test("create, document, assess, export, and restore a workspace", async ({
     }),
   ).toHaveValue("I observed the synthetic tests complete successfully.");
   await page.getByRole("link", { name: "View recommendation map" }).click();
-  await expect(page.getByText("5 open conditions")).toBeVisible();
+  await expect(page.getByText("5 follow-up records")).toBeVisible();
   await page.getByText("How this rule works").first().click();
   await expect(
     page.getByText("R01: IF assessment is not current", { exact: false }),
@@ -176,7 +177,7 @@ test("navigation, responsive layout, and human review guard", async ({
     ["Activity profiles", "Activity profiles"],
     ["Assessment rubric", "Assessment rubric"],
     ["Recommendation map", "Recommendation map"],
-    ["Method & concepts", "Method & concept editor"],
+    ["Method & concepts", "Method & concepts"],
     ["Dashboard", "Assessment overview"],
   ]) {
     await openNav(page, label);
@@ -217,6 +218,7 @@ test("human review remains separate from completeness and linked files are prote
   await page.getByRole("link", { name: "Open rubric", exact: true }).click();
   for (let index = 0; index < 6; index++) {
     await page.locator(".group-nav button").nth(index).click();
+    await page.getByLabel("Not Evidenced", { exact: true }).check();
     await page
       .getByLabel("Written evidence & assessment rationale", { exact: false })
       .fill(
@@ -330,4 +332,16 @@ test("empty and unavailable concept sources are explicit without invented record
     page.getByText("Repository source not yet connected"),
   ).toBeVisible();
   await expect(page.locator(".concept-card")).toHaveCount(0);
+});
+
+// Regression coverage for saved workspaces created before the report release.
+test.beforeEach(async ({ page }) => {
+  const fixture = initialWorkspace();
+  await page.addInitScript((w) => {
+    if (!localStorage.getItem("ross-assessment-workspace-v1"))
+      localStorage.setItem("ross-assessment-workspace-v1", JSON.stringify(w));
+  }, fixture);
+  await page.route("**/data/concepts.json", (route) =>
+    route.fulfill({ json: { concepts: [] } }),
+  );
 });

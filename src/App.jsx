@@ -35,6 +35,7 @@ import {
 } from "./lib/storage.js";
 import { parseConcepts } from "./lib/concepts.js";
 import { Badge, Modal, FormError } from "./components/ui.jsx";
+import ReportBaseline from "./components/ReportBaseline.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Activities from "./pages/Activities.jsx";
 import Rubric from "./pages/Rubric.jsx";
@@ -400,6 +401,7 @@ export default function App() {
               </button>
             </div>
           )}
+          <ReportBaseline />
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/activities" element={<Activities />} />

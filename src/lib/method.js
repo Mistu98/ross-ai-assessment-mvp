@@ -1,3 +1,17 @@
+import {
+  A1_PROFILE,
+  A2_PROFILE,
+  A3_PROFILE,
+  PREPARED_PROFILES,
+} from "../data/activityProfiles.js";
+import report from "../data/reportBaseline.json" with { type: "json" };
+import literature from "../../data/concepts.json" with { type: "json" };
+export const RUBRIC_LEVELS = [
+  "Lower / More Bounded",
+  "Intermediate",
+  "Higher / More Demanding",
+  "Unresolved pending clarification",
+];
 // Working UI groupings only. Replace with the reviewed literature mapping after
 // the empty repository concept source is populated; these labels are not literature findings.
 export const METHOD = {
@@ -190,32 +204,120 @@ export function initialWorkspace() {
     updatedAt: null,
     conceptSource: null,
     activities: [
-      makeActivity(
-        "a1",
-        "A1",
-        "AI-assisted bug fixing",
-        "Document a bug-fixing activity: the problem, AI assistance used, code changes, validation, and human review.",
-      ),
-      makeActivity(
-        "a2",
-        "A2",
-        "Agent-supported development",
-        "Document an agent-supported development, build-and-test activity, including execution boundaries and approval checkpoints.",
-      ),
-      makeActivity(
-        "a3",
-        "A3",
-        "AI-assisted code review",
-        "Document an AI-assisted code review activity, the review scope, and how findings are verified by a human reviewer.",
-      ),
+      {
+        ...makeActivity("a1", "A1", A1_PROFILE.title, A1_PROFILE.description),
+        owner: A1_PROFILE.owner,
+        tool: A1_PROFILE.tool,
+      },
+      {
+        ...makeActivity("a2", "A2", A2_PROFILE.title, A2_PROFILE.description),
+        owner: A2_PROFILE.owner,
+        tool: A2_PROFILE.tool,
+      },
+      {
+        ...makeActivity("a3", "A3", A3_PROFILE.title, A3_PROFILE.description),
+        owner: A3_PROFILE.owner,
+        tool: A3_PROFILE.tool,
+      },
     ],
   };
+}
+// Kept separate from the legacy constructor: saved workspaces never silently
+// receive report judgements or a different interpretation of their factor IDs.
+export function reportWorkspace() {
+  const method = structuredClone(report.method);
+  return {
+    ...initialWorkspace(),
+    method,
+    conceptSource: {
+      raw: structuredClone(literature),
+      name: "Report 13 November 2026 · literature mapping",
+      loadedAt: "",
+    },
+    activities: report.activities.map((source) =>
+      reportActivity(source, source.code.toLowerCase(), source.code, method),
+    ),
+  };
+}
+export function reportActivity(source, id, code, method) {
+  const activity = {
+    ...makeActivity(id, code, source.title, source.description, method),
+    owner: source.owner,
+    tool: source.tool,
+    reportCase: source.code,
+    reviewStatus: "In review",
+  };
+  activity.evidence = source.evidenceRefs.map((ref) => {
+    const e = report.evidence[ref];
+    return {
+      id: `${id}-${ref}`,
+      name: `${ref} · ${e.name}`,
+      kind: "note",
+      caption: "Report reference summary · original file is not attached",
+      content: `${report.source}, Section 4.2 evidence catalogue.\n\n${e.observation}\n\nLimitations: ${e.limitation}\n\nApplicability: ${e.relevance}`,
+      size: 0,
+      type: "text/plain",
+      dataUrl: "",
+      addedAt: "",
+      updatedAt: null,
+    };
+  });
+  activity.evidence.push({
+    id: `${id}-clarification`,
+    name: "Stakeholder clarification · report summary",
+    kind: "note",
+    caption:
+      "Clarification reported in Section 4.2; no original interview or transcript attached",
+    content: `${report.source}, Sections 4.2 and 4.5.\n\n${source.findings
+      .filter((f) => f.clarification)
+      .map((f) => `${f.rationale}\nRemaining limitation: ${f.condition}`)
+      .join("\n\n")}`,
+    size: 0,
+    type: "text/plain",
+    dataUrl: "",
+    addedAt: "",
+    updatedAt: null,
+  });
+  for (const finding of source.findings) {
+    const factor = allFactors(method).find((f) => f.id === finding.factorId);
+    if (!factor) continue;
+    activity.assessments[factor.id] = {
+      ...blankAssessment(factor.revision),
+      ...finding,
+      evidenceIds: finding.evidenceRefs.map((ref) => `${id}-${ref}`),
+      recorded: true,
+      assessor: "Transcribed from report findings; no new assessor sign-off",
+      factorSnapshot: {
+        name: factor.name,
+        question: factor.question,
+        groupName: factor.groupName,
+        revision: factor.revision,
+        methodRevision: method.revision,
+        releaseVersion: report.version,
+        ...(factor.rubric ? { rubric: structuredClone(factor.rubric) } : {}),
+        concepts: literature.concepts
+          .filter((c) => factor.conceptIds.includes(c.id))
+          .map((c) => ({
+            id: c.id,
+            title: c.name,
+            description: c.description,
+            source: c.source,
+          })),
+      },
+    };
+    delete activity.assessments[factor.id].factorId;
+    delete activity.assessments[factor.id].evidenceRefs;
+    delete activity.assessments[factor.id].clarification;
+    if (finding.clarification)
+      activity.assessments[factor.id].evidenceIds.push(`${id}-clarification`);
+  }
+  return activity;
 }
 export const isCurrent = (assessment, factor) =>
   Boolean(
     assessment?.recorded &&
-      (assessment.factorRevision ?? 1) === factor.revision &&
-      !assessment.needsReapplication,
+    (assessment.factorRevision ?? 1) === factor.revision &&
+    !assessment.needsReapplication,
   );
 export function coverage(activity, method = defaultMethod(), groupId) {
   const factors = allFactors(method).filter(
@@ -227,11 +329,13 @@ export function coverage(activity, method = defaultMethod(), groupId) {
     absent: 0,
     outdated: 0,
     recorded: 0,
+    unassessed: 0,
   };
   for (const factor of factors) {
     const a =
       activity.assessments[factor.id] || blankAssessment(factor.revision);
-    if (a.recorded && !isCurrent(a, factor)) counts.outdated++;
+    if (!a.recorded) counts.unassessed++;
+    else if (!isCurrent(a, factor)) counts.outdated++;
     else if (a.status === "Present") counts.present++;
     else if (a.status === "Partial") counts.partial++;
     else counts.absent++;
@@ -254,9 +358,12 @@ export function recommendations(activity, method = defaultMethod()) {
       ...factor,
       assessment,
       outdated,
+      awaitingAssessment: !assessment.recorded,
       unresolved:
         !isCurrent(assessment, factor) ||
         assessment.status !== "Present" ||
+        (Boolean(factor.rubric) && !assessment.rubricLevel) ||
+        assessment.rubricLevel === "Unresolved pending clarification" ||
         Boolean(assessment.condition.trim()),
       supportedBy: assessment.evidenceIds
         .map((id) => activity.evidence.find((e) => e.id === id))
@@ -277,6 +384,26 @@ export const invalidateReview = (activity) => ({
   reviewedAt: null,
   updatedAt: new Date().toISOString(),
 });
+export function applyPreparedA1Profile(activity) {
+  if (activity.id !== "a1")
+    throw new Error("The prepared profile belongs to A1 only.");
+  return applyPreparedProfile(activity);
+}
+export function applyPreparedProfile(activity) {
+  const profile = PREPARED_PROFILES[activity.id];
+  if (!profile)
+    throw new Error("No prepared profile is available for this activity.");
+  return {
+    ...invalidateReview(activity),
+    ...profile,
+    assessments: Object.fromEntries(
+      Object.entries(activity.assessments).map(([id, record]) => [
+        id,
+        record.recorded ? { ...record, needsReapplication: true } : record,
+      ]),
+    ),
+  };
+}
 export function assessActivity(
   activity,
   factorId,
@@ -288,6 +415,12 @@ export function assessActivity(
   if (!factor) throw new Error("Choose an active assessment factor.");
   if (!STATUSES.includes(assessment.status))
     throw new Error("Choose a valid evidence status.");
+  if (assessment.rubricLevel && !RUBRIC_LEVELS.includes(assessment.rubricLevel))
+    throw new Error("Choose a valid qualitative rubric condition.");
+  if (assessment.rubricLevel && !assessment.rubricRationale?.trim())
+    throw new Error(
+      "Explain the qualitative rubric condition separately from evidence status.",
+    );
   if (!assessment.rationale.trim())
     throw new Error(
       "Add written evidence or a rationale before recording this assessment.",
@@ -307,6 +440,7 @@ export function assessActivity(
       ...activity.assessments,
       [factorId]: {
         ...assessment,
+        sourceReference: assessment.sourceReference || "",
         factorRevision: factor.revision,
         needsReapplication: false,
         recorded: true,
@@ -319,6 +453,7 @@ export function assessActivity(
           revision: factor.revision,
           methodRevision: method.revision,
           releaseVersion: method.release?.version || null,
+          ...(factor.rubric ? { rubric: structuredClone(factor.rubric) } : {}),
           concepts: factor.conceptIds
             .map((id) => concepts.find((c) => c.id === id))
             .filter(Boolean)
@@ -339,10 +474,13 @@ export function reviewActivity(activity, reviewer, method = defaultMethod()) {
   if (
     !activeGroups(method).length ||
     activeGroups(method).some((g) => !g.factors.some((f) => !f.archived)) ||
-    coverage(activity, method).recorded !== allFactors(method).length
+    coverage(activity, method).recorded !== allFactors(method).length ||
+    allFactors(method).some(
+      (f) => f.rubric && !activity.assessments[f.id]?.rubricLevel,
+    )
   )
     throw new Error(
-      "Record a current human assessment for all active factors across the active groupings before marking this activity reviewed.",
+      "Record a current human assessment and apply the qualitative rubric where defined for all active factors across the active groupings before marking this activity reviewed.",
     );
   return {
     ...activity,
@@ -436,6 +574,7 @@ export function saveFactor(workspace, groupId, input) {
     conceptIds: input.conceptIds || [],
     revision: existing ? existing.revision + 1 : 1,
     archived: existing?.archived || false,
+    ...(existing?.rubric ? { rubric: existing.rubric } : {}),
   };
   if (
     !validIdentifier(factor.id) ||

@@ -1,3 +1,4 @@
+import { initialWorkspace } from "../../src/lib/method.js";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 const legacy = JSON.parse(
@@ -413,4 +414,16 @@ test("file replacement and evidence descriptions persist after refresh", async (
       .getByRole("img", { name: "synthetic-screenshot.png", exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Close dialog", exact: true }).click();
+});
+
+// Regression coverage for saved workspaces created before the report release.
+test.beforeEach(async ({ page }) => {
+  const fixture = initialWorkspace();
+  await page.addInitScript((w) => {
+    if (!localStorage.getItem("ross-assessment-workspace-v1"))
+      localStorage.setItem("ross-assessment-workspace-v1", JSON.stringify(w));
+  }, fixture);
+  await page.route("**/data/concepts.json", (route) =>
+    route.fulfill({ json: { concepts: [] } }),
+  );
 });

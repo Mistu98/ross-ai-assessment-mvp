@@ -1,3 +1,4 @@
+import ReportRecommendations from "../components/ReportRecommendations.jsx";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
@@ -77,7 +78,7 @@ export default function Recommendations() {
             </label>
             <div className="toolbar-status">
               <Badge tone={open ? "amber" : "green"} dot>
-                {open} open conditions
+                {open} follow-up records
               </Badge>
               <span>{rules.length} explicit rules</span>
             </div>
@@ -110,6 +111,17 @@ export default function Recommendations() {
               Open conditions only
             </label>
           </div>
+          <ReportRecommendations
+            activity={activity}
+            method={workspace.method}
+            category={category}
+          />
+          <h2 className="followup-heading">Live follow-up rules</h2>
+          <p className="muted">
+            These prompts reflect your current recorded evidence. Missing
+            assessments await human judgement; they are not recorded as Not
+            Evidenced.
+          </p>
           <div className="recommendation-list">
             {filtered.map((rule) => (
               <section
@@ -133,7 +145,13 @@ export default function Recommendations() {
                     </h2>
                   </div>
                   <Badge tone={rule.unresolved ? "amber" : "green"} dot>
-                    {rule.unresolved ? "Follow-up required" : "Documented"}
+                    {rule.awaitingAssessment
+                      ? "Awaiting assessment"
+                      : rule.outdated
+                        ? "Reapplication needed"
+                        : rule.unresolved
+                          ? "Follow-up required"
+                          : "Documented"}
                   </Badge>
                 </div>
                 <div className="recommendation-content">
@@ -163,8 +181,26 @@ export default function Recommendations() {
                       <span className="field-caption">
                         HUMAN-RECORDED STATUS
                       </span>
-                      <StatusBadge status={rule.assessment.status} />
+                      <StatusBadge
+                        status={
+                          rule.assessment.recorded
+                            ? rule.assessment.status
+                            : "Not yet assessed"
+                        }
+                      />
                       <p>{rule.explanation}</p>
+                      {rule.assessment.rubricLevel && (
+                        <p>
+                          Separate rubric condition:{" "}
+                          <strong>{rule.assessment.rubricLevel}</strong>.{" "}
+                          {rule.assessment.rubricRationale}
+                        </p>
+                      )}
+                      {rule.assessment.sourceReference && (
+                        <p className="source-citation">
+                          {rule.assessment.sourceReference}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <span className="field-caption">
@@ -200,8 +236,10 @@ export default function Recommendations() {
                     <div>
                       <code>
                         {rule.rule}: IF assessment is not current OR status ≠
-                        Present OR unresolved condition is non-empty → follow-up
-                        required. ELSE → maintain documented evidence.
+                        Present OR a defined rubric is not yet applied OR rubric
+                        condition is Unresolved OR unresolved condition is
+                        non-empty → follow-up required. ELSE → maintain
+                        documented evidence.
                       </code>
                       <p>
                         Input: {activity.code} → {rule.name}. Evidence status is

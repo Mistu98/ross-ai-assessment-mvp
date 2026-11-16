@@ -1,3 +1,4 @@
+import AssessmentComparison from "../components/AssessmentComparison.jsx";
 import { Link } from "react-router-dom";
 import {
   Plus,
@@ -42,10 +43,11 @@ export default function Dashboard() {
         present: sum.present + c.present,
         partial: sum.partial + c.partial,
         absent: sum.absent + c.absent,
+        unassessed: sum.unassessed + c.unassessed,
         outdated: sum.outdated + c.outdated,
       };
     },
-    { present: 0, partial: 0, absent: 0, outdated: 0 },
+    { present: 0, partial: 0, absent: 0, outdated: 0, unassessed: 0 },
   );
   const open = activities.reduce(
       (sum, a) =>
@@ -100,9 +102,9 @@ export default function Dashboard() {
           ],
           [
             ClipboardList,
-            "Open conditions",
+            "Follow-up records",
             open.toString().padStart(2, "0"),
-            `${counts.outdated} records need reapplication`,
+            `${counts.unassessed} awaiting assessment · ${counts.outdated} need reapplication`,
             "amber",
           ],
           [
@@ -125,10 +127,11 @@ export default function Dashboard() {
           </div>
         ))}
       </div>
+      <AssessmentComparison workspace={workspace} />
       <section className="dashboard-groupings">
         <SectionHeading
           title={`${activeGroups(method).length} assessment groupings`}
-          subtitle="Working labels are provisional. Open a grouping to edit its factors, questions, and controls."
+          subtitle="The active research method links literature concepts to editable assessment criteria. Counts adapt when groupings change."
         >
           <Link to="/method?tab=groupings" className="text-link">
             Manage all factors <ArrowRight size={16} />
@@ -333,6 +336,7 @@ export default function Dashboard() {
               ["Present", counts.present, "green-dot"],
               ["Partial", counts.partial, "amber-dot"],
               ["Not Evidenced", counts.absent, "gray-dot"],
+              ["Not yet assessed", counts.unassessed, "gray-dot"],
               ["Reapplication needed", counts.outdated, "violet-dot"],
             ].map(([label, count, tone]) => (
               <div key={label}>
@@ -345,7 +349,8 @@ export default function Dashboard() {
             ))}
           </div>
           <p className="evidence-disclaimer">
-            Documentation completeness, not a risk score.
+            Evidence availability, not adequacy or a risk score. Present
+            evidence can document a validation gap.
           </p>
         </section>
       </div>

@@ -1,3 +1,111 @@
 {
-  "concepts": []
+  "version": "report-2026-11-13-provisional",
+  "source": "Report 13 November 2026, literature consolidation and grouping mapping (Tables 4–5). Representative citations are reproduced as supplied, not independently verified.",
+  "concepts": [
+    {
+      "id": "C01",
+      "name": "Activity Scope, Complexity & Task Fit",
+      "description": "Assess the activity’s type, scope, complexity, decomposability, feasibility and AI-task fit.",
+      "source": "Hou et al. (2024); Zhang et al. (2026); Erer et al. (2025); Milliken et al. (2025)",
+      "groupingIds": ["activity-readiness"]
+    },
+    {
+      "id": "C02",
+      "name": "Context Sufficiency & Acquisition",
+      "description": "Assess whether AI receives or can obtain sufficient, relevant and consistent repository/project context.",
+      "source": "Zhang et al. (2025); Liu et al. (2026); Sonkin & Tudose (2025); Hindi et al. (2026)",
+      "groupingIds": ["workflow-context"]
+    },
+    {
+      "id": "C03",
+      "name": "Environment Dependence & Engineering Readiness",
+      "description": "Assess repository/environment readiness, dependencies, domain constraints and supporting engineering infrastructure required for the activity.",
+      "source": "Milliken et al. (2025); Anderson (2026); Pandey et al. (2025); Madani et al. (2025)",
+      "groupingIds": ["activity-readiness"]
+    },
+    {
+      "id": "C04",
+      "name": "Workflow Integration & AI Operating Mode",
+      "description": "Assess where and how AI participates in the engineering workflow, including its role across implementation, testing, review and integration.",
+      "source": "Madani et al. (2025); Kapetanovic et al. (2026); Sonkin & Tudose (2025); Selvanayagam & Ghaleb (2026)",
+      "groupingIds": ["workflow-context"]
+    },
+    {
+      "id": "C05",
+      "name": "Functional / Specification Alignment & Defect Risk",
+      "description": "Assess whether AI-generated changes align with requirements/ specifications and avoid functional, logic or consistency defects.",
+      "source": "Tian et al. (2025); Hindi et al. (2026); Erer et al. (2025); Gong et al. (2026)",
+      "groupingIds": ["validation-adequacy"]
+    },
+    {
+      "id": "C06A",
+      "name": "Security Risk & Assurance",
+      "description": "Assess whether AI-assisted changes introduce security risk and what security-assurance mechanisms are applied.",
+      "source": "Khan et al. (2026); Sun et al. (2026); Liu et al. (2026); Enyedi (2026)",
+      "groupingIds": ["cross-cutting-controls"]
+    },
+    {
+      "id": "C06B",
+      "name": "Maintainability & Performance Quality",
+      "description": "Assess maintainability, code quality, performance efficiency, and whether relevant non-functional quality characteristics are adequately evaluated",
+      "source": "Sun et al. (2026); Liu et al. (2026); Peng et al. (2024); Watanabe et al. (2026)",
+      "groupingIds": ["cross-cutting-controls"]
+    },
+    {
+      "id": "C07",
+      "name": "Validation Mechanisms & Test Adequacy",
+      "description": "Assess whether the activity has appropriate validation mechanisms and sufficiently strong testing to detect relevant failures.",
+      "source": "Yang et al. (2026); Khan et al. (2026); Hachaïchi & Ouerghi (2025); Hindi et al. (2026)",
+      "groupingIds": ["validation-adequacy"]
+    },
+    {
+      "id": "C08",
+      "name": "Validation Feedback & Iterative Refinement",
+      "description": "Assess whether validation or review findings are fed back into the activity to refine the output and whether revised outputs are revalidated.",
+      "source": "Alrashedy et al. (2025); Blyth et al. (2025); Anderson (2026); Ogenrwot & Businge (2026)",
+      "groupingIds": ["cross-cutting-controls"]
+    },
+    {
+      "id": "C09",
+      "name": "Human Review, Approval & Oversight Placement",
+      "description": "Assess where human review, approval or intervention is required within the AI-assisted activity.",
+      "source": "Watanabe et al. (2026); Sardar et al. (2026); Sonkin & Tudose (2025); Ogenrwot & Businge (2026)",
+      "groupingIds": ["human-approval"]
+    },
+    {
+      "id": "C10",
+      "name": "Autonomy, Permissions & State-Change Authority",
+      "description": "Assess how much operational authority AI has, what tools/actions it can access, and what state-changing actions it is permitted to perform.",
+      "source": "Hasan & Biswas (2026); Kapetanovic et al. (2026); Parthasarathy et al. (2025); Sardar et al. (2026)",
+      "groupingIds": ["operational-autonomy"]
+    },
+    {
+      "id": "C11",
+      "name": "Guardrails, Safe Halt, Rollback & Recovery",
+      "description": "Assess whether technical guardrails can constrain unsafe actions and whether failed or undesirable changes can be halted, reversed or recovered from.",
+      "source": "Hasan & Biswas (2026); Sonkin & Tudose (2025); Hindi et al. (2026); Ning et al. (2026)",
+      "groupingIds": ["cross-cutting-controls"]
+    },
+    {
+      "id": "C12",
+      "name": "Monitoring, Traceability & Evidence Provenance",
+      "description": "Assess whether AI-assisted work is observable and traceable, with evidence showing what occurred, who/what performed actions, validation outcomes, and when reassessment may be needed.",
+      "source": "Anderson (2026); Enyedi (2026); Xie et al. (2024); Pandey et al. (2025)",
+      "groupingIds": ["operational-autonomy"]
+    },
+    {
+      "id": "C13",
+      "name": "Reviewer Independence, Trust & Automated Oversight",
+      "description": "Assess whether review provides sufficiently independent oversight, particularly when AI-generated work is also reviewed by AI, and what level of trust can be placed in automated review.",
+      "source": "Selvanayagam & Ghaleb (2026); Ogenrwot & Businge (2026); Gong et al. (2026); Hindi et al. (2026)",
+      "groupingIds": ["cross-cutting-controls"]
+    },
+    {
+      "id": "C14",
+      "name": "Agent Orchestration & Interface Controls",
+      "description": "Assess whether agent/sub-agent coordination, tool interactions and interfaces are controlled sufficiently to prevent coordination or interface failures.",
+      "source": "Ning et al. (2026); Hasan & Biswas (2026); Parthasarathy et al. (2025); Ștefănescu & Aciobăniței (2026)",
+      "groupingIds": ["cross-cutting-controls"]
+    }
+  ]
 }

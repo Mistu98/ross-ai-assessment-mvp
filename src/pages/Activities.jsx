@@ -10,7 +10,15 @@ import {
   Info,
 } from "lucide-react";
 import { useWorkspace } from "../lib/workspace.jsx";
-import { coverage, invalidateReview } from "../lib/method.js";
+import {
+  coverage,
+  invalidateReview,
+  applyPreparedProfile,
+} from "../lib/method.js";
+import {
+  PREPARED_PROFILES,
+  hasPreparedProfile,
+} from "../data/activityProfiles.js";
 import {
   PageHeading,
   AssessmentJourney,
@@ -125,9 +133,12 @@ export default function Activities() {
   );
 }
 function Profile({ activity, onDeleted }) {
-  const { workspace, updateActivity, commit } = useWorkspace(),
+  const { workspace, updateActivity, commit, exportData } = useWorkspace(),
     [error, setError] = useState(""),
+    [loadingPrepared, setLoadingPrepared] = useState(false),
+    [profileLoadRevision, setProfileLoadRevision] = useState(0),
     [deleting, setDeleting] = useState(false);
+  const prepared = PREPARED_PROFILES[activity.id];
   function save(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget),
@@ -139,6 +150,18 @@ function Profile({ activity, onDeleted }) {
     updateActivity(
       invalidateReview({
         ...activity,
+        assessments: Object.fromEntries(
+          Object.entries(activity.assessments).map(([id, record]) => [
+            id,
+            record.recorded &&
+            (title !== activity.title ||
+              data.get("description").trim() !== activity.description ||
+              data.get("owner").trim() !== activity.owner ||
+              data.get("tool").trim() !== activity.tool)
+              ? { ...record, needsReapplication: true }
+              : record,
+          ]),
+        ),
         title,
         description: data.get("description").trim(),
         owner: data.get("owner").trim(),
@@ -149,6 +172,37 @@ function Profile({ activity, onDeleted }) {
   }
   return (
     <>
+      {activity.reportCase && (
+        <div className="source-citation">
+          <strong>{activity.reportCase} · Report-derived profile</strong>
+          <p>
+            Section 4.2 documents the activity context and evidence limitations.
+            Supporting records below are editable report summaries; original
+            screenshots are not attached. Add files to the relevant record and
+            link them explicitly in the rubric. Uploads do not assign evidence
+            statuses.
+          </p>
+        </div>
+      )}
+      {prepared && !hasPreparedProfile(activity) && (
+        <div className="info-box page-info">
+          <Info size={19} />
+          <div>
+            <p>
+              The repository includes prepared {activity.code} details from the
+              supplied case material. Your saved profile is kept until you
+              choose to load them.
+            </p>
+            <button
+              type="button"
+              className="text-button"
+              onClick={() => setLoadingPrepared(true)}
+            >
+              Load prepared {activity.code} details
+            </button>
+          </div>
+        </div>
+      )}
       <div className="card">
         <SectionHeading
           title={`${activity.code} · Activity details`}
@@ -159,11 +213,16 @@ function Profile({ activity, onDeleted }) {
             <StatusBadge status={activity.reviewStatus} />
           </span>
         </SectionHeading>
-        <form className="panel-body form-stack" onSubmit={save}>
+        <form
+          key={profileLoadRevision}
+          className="panel-body form-stack"
+          onSubmit={save}
+        >
           <label>
             Activity title
             <input
               name="title"
+              aria-label="Activity title"
               defaultValue={activity.title}
               required
               maxLength={200}
@@ -173,6 +232,7 @@ function Profile({ activity, onDeleted }) {
             Detailed description
             <textarea
               name="description"
+              aria-label="Detailed description"
               defaultValue={activity.description}
               rows={5}
               maxLength={20000}
@@ -184,6 +244,7 @@ function Profile({ activity, onDeleted }) {
               Activity owner
               <input
                 name="owner"
+                aria-label="Activity owner"
                 defaultValue={activity.owner}
                 maxLength={200}
                 placeholder="Name or role"
@@ -193,6 +254,7 @@ function Profile({ activity, onDeleted }) {
               AI tool / environment
               <input
                 name="tool"
+                aria-label="AI tool / environment"
                 defaultValue={activity.tool}
                 maxLength={200}
                 placeholder="Tool and version, if applicable"
@@ -204,7 +266,7 @@ function Profile({ activity, onDeleted }) {
             <span className="small muted">
               {activity.updatedAt
                 ? "Changes are saved in this browser."
-                : "Starter profile · assessment not yet recorded"}
+                : "Profile ready for review · assessment not yet recorded"}
             </span>
             <button className="button button-primary" type="submit">
               <Save size={16} /> Save profile
@@ -212,6 +274,65 @@ function Profile({ activity, onDeleted }) {
           </div>
         </form>
       </div>
+      {loadingPrepared && (
+        <Modal
+          title={`Load prepared ${activity.code} details`}
+          wide
+          onClose={() => setLoadingPrepared(false)}
+        >
+          <div className="modal-body form-stack">
+            <p>
+              This replaces the title, owner, tool/environment and description.
+              Attachments and earlier assessment records remain; recorded
+              judgements are flagged for reapplication because the activity
+              context changes. Save any current edits and export a backup first
+              if you need the previous profile text.
+            </p>
+            {Object.entries(prepared).map(([field, value]) => (
+              <label key={field}>
+                Repository{" "}
+                {field === "tool"
+                  ? "AI tool / environment"
+                  : field === "owner"
+                    ? "activity owner"
+                    : field === "title"
+                      ? "activity title"
+                      : "detailed description"}
+                <textarea
+                  readOnly
+                  aria-label={`Repository ${field}`}
+                  rows={field === "description" ? 10 : 2}
+                  value={value}
+                />
+              </label>
+            ))}
+            <div className="modal-actions">
+              <button className="button button-secondary" onClick={exportData}>
+                Export current workspace
+              </button>
+              <button
+                className="button button-secondary"
+                onClick={() => setLoadingPrepared(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="button button-primary"
+                onClick={() => {
+                  updateActivity(
+                    applyPreparedProfile(activity),
+                    `Prepared ${activity.code} details loaded; evidence retained`,
+                  );
+                  setProfileLoadRevision((value) => value + 1);
+                  setLoadingPrepared(false);
+                }}
+              >
+                Apply {activity.code} details
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
       <EvidencePanel activity={activity} />
       <div className="profile-next">
         <div>

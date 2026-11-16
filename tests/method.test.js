@@ -26,7 +26,8 @@ test("starter activities contain no invented assessment evidence", () => {
     assert.deepEqual(coverage(activity), {
       present: 0,
       partial: 0,
-      absent: 6,
+      absent: 0,
+      unassessed: 6,
       outdated: 0,
       recorded: 0,
       total: 6,

@@ -3427,3 +3427,155 @@ h3,
   background: #f4f5f7;
   text-align: center;
 }
+
+/* Report-based content: readable provenance, comparison and separate judgements. */
+.report-source-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  background: #fff;
+  border: 1px solid var(--border, #dfe3e8);
+  border-left: 4px solid #191b1e;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.report-source-strip span,
+.report-source-strip p {
+  color: #566174;
+  margin: 0;
+}
+.report-source-strip a {
+  font-weight: 600;
+  text-decoration: underline;
+}
+.comparison-section {
+  margin: 24px 0;
+  overflow: hidden;
+}
+.comparison-section table {
+  min-width: 760px;
+  table-layout: fixed;
+}
+.comparison-section th:first-child {
+  width: 28%;
+}
+.comparison-section th {
+  white-space: normal;
+  line-height: 1.55;
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.comparison-section th small {
+  display: block;
+  font-weight: 400;
+  color: #59667a;
+}
+.comparison-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  color: #344054;
+}
+.comparison-cell:hover {
+  text-decoration: underline;
+}
+.comparison-cell strong {
+  color: #745418;
+  font-size: 11px;
+}
+.source-citation {
+  padding: 12px 14px;
+  background: #f4f5f7;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #475467;
+}
+.rubric-definitions {
+  display: grid;
+  gap: 14px;
+}
+.rubric-definitions dt {
+  font-weight: 650;
+  margin-bottom: 4px;
+}
+.rubric-definitions dd {
+  margin: 0;
+}
+.rubric-condition-panel {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  background: #f8f9fb;
+  border: 1px solid #e1e5eb;
+  border-radius: 8px;
+}
+.rubric-condition-panel p {
+  font-size: 13px;
+  color: #566174;
+  margin: 0;
+}
+.report-recommendations {
+  margin: 28px 0;
+}
+.report-recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.report-recommendation-grid article {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.report-recommendation-grid p {
+  line-height: 1.8;
+  font-size: 14px;
+  margin: 0;
+}
+.report-recommendation-grid small {
+  color: #59667a;
+}
+.report-evidence-links {
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+}
+.report-evidence-links a {
+  text-decoration: underline;
+}
+.followup-heading {
+  margin: 28px 0 8px;
+}
+.reapplication-guide {
+  margin-top: 32px;
+}
+.reapplication-steps {
+  padding-left: 26px;
+}
+.reapplication-steps li {
+  padding: 12px 0 12px 8px;
+}
+.reapplication-steps p {
+  line-height: 1.8;
+}
+@media (max-width: 760px) {
+  .report-recommendation-grid {
+    grid-template-columns: 1fr;
+  }
+  .report-source-strip {
+    padding: 14px;
+  }
+  .rubric-condition-panel {
+    padding: 14px;
+  }
+}

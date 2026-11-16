@@ -56,19 +56,23 @@ All editor changes apply to **this browser workspace**. They do not update every
 
 ## Method status
 
-The existing `data/concepts.json` contains **`{"concepts": []}`**. It is connected and retained unchanged. The project owner will provide the finalized literature concepts and their mapping later. The original target of 15 concepts and six groupings describes the initial research structure; neither count is a permanent method constraint. Per that instruction, the six working grouping labels and recommendation prompts remain visibly **provisional**, and no concepts, references, or source mappings have been invented.
+The report dated **13 November 2026** supplies 15 consolidated concepts and six **provisional** groupings. `data/concepts.json` now contains those definitions, representative citations and explicit mappings. The grouping count remains data-driven; C06A and C06B are separate concepts. These report findings do not constitute independent literature verification or final methodology approval.
 
-`0.2-draft` identifies the browser implementation, not a validated research release. The UI distinguishes implemented features from planned pipeline automation and future collaboration.
+Fresh browser workspaces load three report-derived profiles, written source summaries, 18 evidence judgements, and separate qualitative rubric conditions. Existing browser records are never overwritten automatically: **Preview report update** shows the method change, offers a backup, and adds distinct report case copies when existing activity IDs/codes are occupied. Prior method definitions are archived and earlier evidence/judgements retained.
 
-Evidence statuses are **Present**, **Partial**, and **Not Evidenced**. They express evidence availability, not risk severity. Starter entries default to Not Evidenced with `recorded: false`; they are distinguished from a human-recorded assessment. Recording any status requires written evidence or rationale.
+`0.2-draft` identifies the implementation format. `report-2026-11-13-provisional` identifies the report content release. Neither is a validated research release.
 
-Evidence coverage = active factor records with current Present evidence ÷ total active factor records. An open condition exists when a factor has no current assessment, a non-Present status, or a non-empty unresolved condition. Records needing reapplication are shown separately from Not Evidenced. These are transparent follow-up prompts, not risk scores, deployment approval, or safety certification. Reviewed is an explicit human workflow checkpoint and can coexist with unresolved conditions.
+**Evidence status** is Present, Partial or Not Evidenced. **Qualitative rubric condition** is Lower / More Bounded, Intermediate, Higher / More Demanding, or Unresolved pending clarification. These are independent human judgements: A1 validation is Present and Intermediate while retaining the regression-gap follow-up. Unrecorded factors display **Not yet assessed**, separately from a human-recorded Not Evidenced judgement.
+
+Evidence coverage = active factor records with current Present evidence ÷ total active factor records. It measures evidence availability, not validation adequacy or risk severity. Live follow-up rules explain missing/stale assessments, non-Present statuses and unresolved conditions. The report recommendation map is separately labelled as source proposals. Reviewed requires an explicit named human checkpoint; transcribed report findings start In review.
+
+See [report alignment and source limitations](docs/REPORT-ALIGNMENT.md).
 
 ## Concept source and KNIME
 
 The Vite plugin in `vite.config.js` serves the existing root `data/concepts.json` in development and copies its bytes unchanged to `dist/data/concepts.json` during build. It never rewrites the source or the `knime/` folder. Both existing source directories are preserved.
 
-The confirmed source envelope is an object containing a `concepts` array. Because the array is empty, individual entry fields are not yet established. The conservative adapter in `src/lib/concepts.js` supports the following candidate fields for future reviewed records and local inspection:
+The confirmed source envelope is an object containing a `concepts` array. The supplied report uses `id`, `name`, `description`, `source`, and `groupingIds`. The adapter in `src/lib/concepts.js` also accepts the following aliases for reviewed imports and local inspection:
 
 | Display field   | Supported source fields                                    |
 | --------------- | ---------------------------------------------------------- |
@@ -118,7 +122,7 @@ No deployment is created by this change. A Netlify deploy preview can be configu
 | `tests/`, `playwright.config.js`              | Unit tests and desktop/mobile workflows                                    |
 | `.github/workflows/frontend.yml`              | Pull-request build and unit checks                                         |
 | `docs/REVIEW.md`, `docs/VALIDATION.md`        | Review checklist and verification results                                  |
-| `data/`, `knime/`                             | Original source data and KNIME artifacts, unchanged                        |
+| `data/concepts.json`, `knime/`                | Report-derived concepts and mappings; original KNIME artifacts unchanged   |
 
 ## Client demonstration
 
@@ -139,3 +143,15 @@ See [the method file contract and update examples](docs/ADAPTABLE-METHOD.md). Im
 Supporting files remain attached while an activity is Draft. The evidence panel shows attached records separately from current human assessments and provides a direct rubric link. Recording an assessment starts **In review**; **Reviewed** still requires an explicit named review of all current factors. An undecodable image has a fallback and remains downloadable/replaceable.
 
 See [evidence and preview troubleshooting](docs/EVIDENCE-TROUBLESHOOTING.md) for Netlify Drawer compatibility and transferring a workspace between preview hostnames with Export/Restore JSON.
+
+## Report case profiles and evidence
+
+`src/data/reportBaseline.json` holds curated report findings, rubric definitions, recommendation proposals and reassessment guidance. `src/data/activityProfiles.js` exposes the four editable profile fields. The full DOCX, original screenshots, personal names, source code, credentials and internal ticket identifiers are not bundled.
+
+- **A1:** a representative bug fix with documented implementation and release context, a missing automated regression guard, and unresolved case-specific approval/permission details.
+- **A2:** the Cloudbreak build-and-test pilot; production-wide operation and complete permissions/thresholds are not established. E04 repository readiness is not applied to A2.
+- **A3:** advisory AI review with human approval/merge authority; emerging telemetry does not establish a validated effectiveness baseline. Future merge-blocking remains a proposal.
+
+Evidence records are explicitly **report reference summaries**, not original artifacts. Attach additional non-confidential files and link them manually to the relevant rubric factors. Editing profiles or linked evidence retains earlier judgements and requires reapplication. Export JSON to preserve full earlier snapshots before recording replacements.
+
+For old A1–A3 profiles, **Load prepared A1/A2/A3 details** still previews and updates only the four fields, preserving attachments and earlier rationale. To add the complete report method and findings, use the separate report-update preview.

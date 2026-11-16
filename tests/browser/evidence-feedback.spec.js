@@ -1,3 +1,4 @@
+import { initialWorkspace } from "../../src/lib/method.js";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
@@ -234,4 +235,16 @@ test("deployed CSP permits the Netlify review frame while blocking unrelated fra
     )
     .toBe(true);
   expect(unrelatedRequests).toBe(0);
+});
+
+// Regression coverage for saved workspaces created before the report release.
+test.beforeEach(async ({ page }) => {
+  const fixture = initialWorkspace();
+  await page.addInitScript((w) => {
+    if (!localStorage.getItem("ross-assessment-workspace-v1"))
+      localStorage.setItem("ross-assessment-workspace-v1", JSON.stringify(w));
+  }, fixture);
+  await page.route("**/data/concepts.json", (route) =>
+    route.fulfill({ json: { concepts: [] } }),
+  );
 });

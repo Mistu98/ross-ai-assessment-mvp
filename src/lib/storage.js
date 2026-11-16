@@ -11,6 +11,8 @@ import {
   defaultMethod,
   allFactors,
   isCurrent,
+  reportWorkspace,
+  RUBRIC_LEVELS,
 } from "./method.js";
 // Retain the original key so deployed v0.1 workspaces migrate in place on read.
 export const STORAGE_KEY = "ross-assessment-workspace-v1";
@@ -91,6 +93,15 @@ export function validateMethod(raw) {
           revision: f.revision,
           archived: Boolean(f.archived),
           conceptIds,
+          ...(f.rubric && typeof f.rubric === "object"
+            ? {
+                rubric: Object.fromEntries(
+                  RUBRIC_LEVELS.filter(
+                    (level) => typeof f.rubric[level] === "string",
+                  ).map((level) => [level, text(f.rubric[level])]),
+                ),
+              }
+            : {}),
         };
       }),
     };
@@ -249,6 +260,12 @@ export function validateWorkspace(raw) {
             "Partial assessments require an unresolved condition.",
           );
         const factorRevision = legacy ? 1 : value.factorRevision;
+        if (value.rubricLevel && !RUBRIC_LEVELS.includes(value.rubricLevel))
+          throw new Error("Invalid qualitative rubric condition.");
+        if (value.rubricLevel && !text(value.rubricRationale).trim())
+          throw new Error(
+            "Qualitative rubric conditions require a separate rationale.",
+          );
         if (
           !Number.isInteger(factorRevision) ||
           factorRevision < 1 ||
@@ -267,6 +284,15 @@ export function validateWorkspace(raw) {
             needsReapplication: Boolean(value.needsReapplication),
             recordedAt: text(value.recordedAt, 50) || null,
             assessor: text(value.assessor, 200),
+            ...(value.sourceReference !== undefined
+              ? { sourceReference: text(value.sourceReference, 1000) }
+              : {}),
+            ...(value.rubricLevel !== undefined
+              ? {
+                  rubricLevel: text(value.rubricLevel, 100),
+                  rubricRationale: text(value.rubricRationale),
+                }
+              : {}),
             factorSnapshot:
               value.factorSnapshot && typeof value.factorSnapshot === "object"
                 ? {
@@ -283,6 +309,21 @@ export function validateWorkspace(raw) {
                       : 1,
                     releaseVersion:
                       text(value.factorSnapshot.releaseVersion, 200) || null,
+                    ...(value.factorSnapshot.rubric &&
+                    typeof value.factorSnapshot.rubric === "object"
+                      ? {
+                          rubric: Object.fromEntries(
+                            RUBRIC_LEVELS.filter(
+                              (level) =>
+                                typeof value.factorSnapshot.rubric[level] ===
+                                "string",
+                            ).map((level) => [
+                              level,
+                              text(value.factorSnapshot.rubric[level]),
+                            ]),
+                          ),
+                        }
+                      : {}),
                     concepts: (Array.isArray(value.factorSnapshot.concepts)
                       ? value.factorSnapshot.concepts
                       : []
@@ -307,7 +348,11 @@ export function validateWorkspace(raw) {
       reviewStatus === "Reviewed" &&
       (!text(a.reviewedBy).trim() ||
         activeGroups(method).some((g) => !g.factors.some((f) => !f.archived)) ||
-        allFactors(method).some((f) => !isCurrent(assessments[f.id], f)))
+        allFactors(method).some(
+          (f) =>
+            !isCurrent(assessments[f.id], f) ||
+            (f.rubric && !assessments[f.id].rubricLevel),
+        ))
     )
       throw new Error(
         "Reviewed activities need a named reviewer and current recorded assessments for all active factors.",
@@ -319,6 +364,9 @@ export function validateWorkspace(raw) {
       description: text(a.description),
       owner: text(a.owner, 200),
       tool: text(a.tool, 200),
+      ...(["A1", "A2", "A3"].includes(a.reportCase)
+        ? { reportCase: a.reportCase }
+        : {}),
       reviewStatus,
       reviewedBy: text(a.reviewedBy, 200),
       reviewedAt: text(a.reviewedAt, 50) || null,
@@ -349,7 +397,7 @@ export function validateWorkspace(raw) {
 }
 export function loadWorkspace(storage = localStorage) {
   const saved = storage.getItem(STORAGE_KEY);
-  return saved ? validateWorkspace(JSON.parse(saved)) : initialWorkspace();
+  return saved ? validateWorkspace(JSON.parse(saved)) : reportWorkspace();
 }
 export function saveWorkspace(workspace, storage = localStorage) {
   storage.setItem(STORAGE_KEY, JSON.stringify(workspace));

@@ -223,3 +223,16 @@ test("method imports preview 6 → 5 → 7 changes and retain earlier human rati
     "Synthetic earlier rationale retained during method evolution.",
   );
 });
+
+// Regression coverage for saved workspaces created before the report release.
+test.beforeEach(async ({ page }, testInfo) => {
+  if (testInfo.title.startsWith("method imports preview")) return;
+  const fixture = initialWorkspace();
+  await page.addInitScript((w) => {
+    if (!localStorage.getItem("ross-assessment-workspace-v1"))
+      localStorage.setItem("ross-assessment-workspace-v1", JSON.stringify(w));
+  }, fixture);
+  await page.route("**/data/concepts.json", (route) =>
+    route.fulfill({ json: { concepts: [] } }),
+  );
+});
