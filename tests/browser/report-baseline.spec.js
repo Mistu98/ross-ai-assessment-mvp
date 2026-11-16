@@ -129,7 +129,7 @@ test("human evidence edits persist without automatically converting the qualitat
   page,
 }) => {
   await page.goto("/#/rubric?activity=a1&group=validation-adequacy");
-  await page.getByLabel("Not Evidenced", { exact: true }).check();
+  await page.getByLabel("Not evidenced", { exact: true }).check();
   await page
     .getByLabel("Written evidence & assessment rationale", { exact: false })
     .fill(
@@ -139,7 +139,7 @@ test("human evidence edits persist without automatically converting the qualitat
     .getByRole("button", { name: "Record assessment", exact: true })
     .click();
   await page.reload();
-  await expect(page.getByLabel("Not Evidenced", { exact: true })).toBeChecked();
+  await expect(page.getByLabel("Not evidenced", { exact: true })).toBeChecked();
   await expect(
     page.getByLabel("Rubric condition", { exact: true }),
   ).toHaveValue("Intermediate");
@@ -151,7 +151,7 @@ test("human evidence edits persist without automatically converting the qualitat
   ).toContain("Human reapplication");
   await page.goto("/");
   await expect(page.locator(".comparison-cell").nth(6)).toContainText(
-    "Not Evidenced",
+    "Not evidenced",
   );
   await expect(page.locator(".comparison-cell").nth(6)).toContainText(
     "Intermediate",

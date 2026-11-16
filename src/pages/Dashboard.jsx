@@ -1,4 +1,5 @@
 import AssessmentComparison from "../components/AssessmentComparison.jsx";
+import ActivityAssessmentSummary from "../components/ActivityAssessmentSummary.jsx";
 import { Link } from "react-router-dom";
 import {
   Plus,
@@ -26,7 +27,6 @@ import {
   PageHeading,
   SectionHeading,
   StatusBadge,
-  CoverageBar,
   Icon,
   EmptyState,
 } from "../components/ui.jsx";
@@ -55,7 +55,6 @@ export default function Dashboard() {
       0,
     ),
     reviewed = activities.filter((a) => a.reviewStatus === "Reviewed").length,
-    percent = total ? Math.round((counts.present / total) * 100) : 0,
     activeConcepts = concepts.items.filter((c) => !c.archived);
   return (
     <>
@@ -96,8 +95,8 @@ export default function Dashboard() {
           [
             FileCheck2,
             "Evidence coverage",
-            `${percent}%`,
-            `${counts.present} of ${total} factors have Present evidence`,
+            `${counts.present}/${total} Present`,
+            `${counts.partial} Partial · ${counts.absent} Not evidenced; evidence availability only`,
             "blue",
           ],
           [
@@ -180,7 +179,7 @@ export default function Dashboard() {
                     {active.length} {active.length === 1 ? "factor" : "factors"}{" "}
                     · {mapped.length} mapped concepts
                   </span>
-                  <span>{present} Present</span>
+                  <span>Evidence: {present} Present</span>
                 </div>
                 <div className="overview-group-actions">
                   <Link
@@ -238,54 +237,34 @@ export default function Dashboard() {
               View all <ArrowRight size={15} />
             </Link>
           </SectionHeading>
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>ACTIVITY</th>
-                  <th>EVIDENCE COVERAGE</th>
-                  <th>STATUS</th>
-                  <th>
-                    <span className="sr-only">Open</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {activities.slice(0, 5).map((a, index) => (
-                  <tr key={a.id}>
-                    <td>
-                      <Link
-                        to={`/activities?activity=${a.id}`}
-                        className="activity-cell"
-                      >
-                        <span className={`activity-code code-${index % 3}`}>
-                          {a.code}
-                        </span>
-                        <span>
-                          <strong>{a.title}</strong>
-                          <small>{a.owner || "Owner not assigned"}</small>
-                        </span>
-                      </Link>
-                    </td>
-                    <td>
-                      <CoverageBar counts={coverage(a, method)} />
-                    </td>
-                    <td>
-                      <StatusBadge status={a.reviewStatus} />
-                    </td>
-                    <td>
-                      <Link
-                        className="icon-button"
-                        to={`/rubric?activity=${a.id}`}
-                        aria-label={`Assess ${a.title}`}
-                      >
-                        <ChevronRight size={18} />
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="dashboard-activity-list">
+            {activities.slice(0, 5).map((a, index) => (
+              <article
+                className="dashboard-activity-card"
+                key={a.id}
+                aria-label={`${a.code} · ${a.title}`}
+              >
+                <div className="dashboard-activity-heading">
+                  <Link
+                    to={`/activities?activity=${a.id}`}
+                    className="activity-cell"
+                  >
+                    <span className={`activity-code code-${index % 3}`}>
+                      {a.code}
+                    </span>
+                    <span>
+                      <strong>{a.title}</strong>
+                      <small>{a.owner || "Owner not assigned"}</small>
+                    </span>
+                  </Link>
+                  <StatusBadge status={a.reviewStatus} />
+                </div>
+                <ActivityAssessmentSummary activity={a} method={method} />
+                <Link className="text-link" to={`/rubric?activity=${a.id}`}>
+                  Open assessment rubric <ChevronRight size={16} />
+                </Link>
+              </article>
+            ))}
             {!activities.length && (
               <EmptyState title="Create your first activity">
                 <button
@@ -307,35 +286,11 @@ export default function Dashboard() {
         </section>
         <section className="card evidence-summary">
           <SectionHeading title="Evidence at a glance" />
-          <div className="donut-container">
-            <svg
-              viewBox="0 0 160 160"
-              role="img"
-              aria-label={`${percent}% of factors have current Present evidence`}
-            >
-              <circle cx="80" cy="80" r="64" className="donut-track" />
-              <circle
-                cx="80"
-                cy="80"
-                r="64"
-                className="donut-present"
-                strokeDasharray={`${percent * 4.0212} 402.12`}
-                transform="rotate(-90 80 80)"
-              />
-            </svg>
-            <div>
-              <strong>
-                {percent}
-                <small>%</small>
-              </strong>
-              <span>Present evidence</span>
-            </div>
-          </div>
           <div className="evidence-legend">
             {[
               ["Present", counts.present, "green-dot"],
               ["Partial", counts.partial, "amber-dot"],
-              ["Not Evidenced", counts.absent, "gray-dot"],
+              ["Not evidenced", counts.absent, "gray-dot"],
               ["Not yet assessed", counts.unassessed, "gray-dot"],
               ["Reapplication needed", counts.outdated, "violet-dot"],
             ].map(([label, count, tone]) => (

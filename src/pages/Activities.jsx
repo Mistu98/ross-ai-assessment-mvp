@@ -10,11 +10,7 @@ import {
   Info,
 } from "lucide-react";
 import { useWorkspace } from "../lib/workspace.jsx";
-import {
-  coverage,
-  invalidateReview,
-  applyPreparedProfile,
-} from "../lib/method.js";
+import { invalidateReview, applyPreparedProfile } from "../lib/method.js";
 import {
   PREPARED_PROFILES,
   hasPreparedProfile,
@@ -24,12 +20,12 @@ import {
   AssessmentJourney,
   SectionHeading,
   StatusBadge,
-  CoverageBar,
   EmptyState,
   FormError,
   Modal,
 } from "../components/ui.jsx";
 import EvidencePanel from "../components/EvidencePanel.jsx";
+import ActivityAssessmentSummary from "../components/ActivityAssessmentSummary.jsx";
 export default function Activities() {
   const { workspace, createActivity } = useWorkspace(),
     [params, setParams] = useSearchParams(),
@@ -88,7 +84,10 @@ export default function Activities() {
               </div>
               <h3>{a.title}</h3>
               <p>{a.description || "No description added yet."}</p>
-              <CoverageBar counts={coverage(a, workspace.method)} />
+              <ActivityAssessmentSummary
+                activity={a}
+                method={workspace.method}
+              />
             </button>
           ))}
           {!filtered.length && (

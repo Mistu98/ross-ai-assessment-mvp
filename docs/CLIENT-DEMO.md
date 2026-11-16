@@ -12,7 +12,7 @@ Use the comparison table to point to A1, A2 and A3. Open A1’s **Quality Risk &
 
 > “Evidence availability and the qualitative rubric condition answer different questions. Neither is a numerical risk score.”
 
-Avoid describing the Present percentage as safety, quality, or test coverage.
+Activity cards show evidence coverage counts and a separate qualitative rubric condition summary. These counts describe documented judgements, not safety, quality, test coverage, or an overall risk level. The dashboard does not show performance bars or a percentage ring.
 
 ## 2. Activity profiles: establish what happened
 

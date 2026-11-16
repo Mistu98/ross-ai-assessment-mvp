@@ -218,7 +218,10 @@ test("human review remains separate from completeness and linked files are prote
   await page.getByRole("link", { name: "Open rubric", exact: true }).click();
   for (let index = 0; index < 6; index++) {
     await page.locator(".group-nav button").nth(index).click();
-    await page.getByLabel("Not Evidenced", { exact: true }).check();
+    await expect(page.locator(".group-nav button").nth(index)).toHaveClass(
+      /active/,
+    );
+    await page.getByLabel("Not evidenced", { exact: true }).check();
     await page
       .getByLabel("Written evidence & assessment rationale", { exact: false })
       .fill(

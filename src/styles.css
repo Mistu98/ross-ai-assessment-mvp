@@ -3579,3 +3579,58 @@ h3,
     padding: 14px;
   }
 }
+
+/* Evidence availability and qualitative rubric conditions are neutral counts. */
+.activity-assessment-summary {
+  display: grid;
+  gap: 8px;
+  color: #344054;
+  font-size: 12px;
+  line-height: 1.65;
+  text-align: left;
+}
+.activity-assessment-summary > span {
+  display: block;
+}
+.activity-assessment-summary strong {
+  font-weight: 600;
+  color: #24272c;
+}
+.activity-summary-history {
+  color: #566174;
+}
+.dashboard-activity-list {
+  display: grid;
+}
+.dashboard-activity-card {
+  padding: 22px 25px;
+  display: grid;
+  gap: 15px;
+  border-top: 1px solid #edf0f3;
+  min-width: 0;
+}
+.dashboard-activity-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.dashboard-activity-heading .activity-cell {
+  min-width: 0;
+  align-items: flex-start;
+}
+.dashboard-activity-heading .badge {
+  flex-shrink: 0;
+}
+.dashboard-activity-card > .text-link {
+  justify-self: start;
+}
+@media (max-width: 600px) {
+  .dashboard-activity-card {
+    padding: 18px;
+  }
+  .dashboard-activity-heading {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}

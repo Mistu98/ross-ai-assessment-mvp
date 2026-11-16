@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import { allFactors, isCurrent } from "../lib/method.js";
 import { StatusBadge } from "./ui.jsx";
+import {
+  evidenceStatusLabel,
+  rubricConditionLabel,
+} from "../lib/assessmentDisplay.js";
 export default function AssessmentComparison({ workspace }) {
   return (
     <section className="card comparison-section">
@@ -34,13 +38,15 @@ export default function AssessmentComparison({ workspace }) {
                     <td key={a.id}>
                       <Link
                         className="comparison-cell"
+                        aria-label={`${a.code}: ${f.groupName}. Evidence: ${r?.recorded ? evidenceStatusLabel(r.status) : "Not yet assessed"}. Qualitative rubric condition: ${rubricConditionLabel(r?.rubricLevel) || "Not yet applied"}`}
                         to={`/rubric?activity=${a.id}&group=${f.groupId}&factor=${f.id}`}
                       >
                         <StatusBadge
                           status={r?.recorded ? r.status : "Not yet assessed"}
                         />
                         <span>
-                          {r?.rubricLevel || "Rubric not yet applied"}
+                          {rubricConditionLabel(r?.rubricLevel) ||
+                            "Rubric not yet applied"}
                         </span>
                         {r?.recorded && !isCurrent(r, f) && (
                           <strong>Reapplication needed</strong>

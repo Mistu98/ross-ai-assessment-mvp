@@ -37,3 +37,17 @@ New browsers receive the report workspace. Saved schema 1/2 workspaces still loa
 Method JSON can change six groupings to five, seven or another supported count. Stable IDs and locally computed revisions determine reapplication; changing a rubric descriptor also invalidates earlier judgements. Profile or linked evidence changes retain the earlier evidence status and qualitative condition and flag them for reapplication. Report recommendations remain labelled historical source proposals after edits; live rules use current records.
 
 Recording a replacement judgement updates the current record; export the full workspace first when a complete historical snapshot is required. No shared storage or automated KNIME publication is implemented.
+
+## Dashboard display contract
+
+Activity cards and the profile selectors separately label **Evidence coverage** and **Qualitative rubric condition**. Report defaults display:
+
+| Activity | Evidence coverage     | Qualitative rubric condition                              |
+| -------- | --------------------- | --------------------------------------------------------- |
+| A1       | 3 Present · 3 Partial | 4 Intermediate · 2 Unresolved                             |
+| A2       | 1 Present · 5 Partial | 2 Higher / More Demanding · 3 Intermediate · 1 Unresolved |
+| A3       | 2 Present · 4 Partial | 4 Intermediate · 2 Lower / More Bounded                   |
+
+These are independent counts of current human judgements. There are no activity progress bars, percentage rings, rankings or overall risk classifications. Stale judgements are retained in the rubric and flagged separately rather than counted as current. New criteria remain unassessed/unapplied until a human records a judgement.
+
+For compatibility, stored/exported values remain `Not Evidenced` and `Unresolved pending clarification`. Display aliases render them as **Not evidenced** and **Unresolved**, including rubric choices and recommendation labels. IDs, titles, the six report criteria, all 18 judgement pairs, rationale, evidence sources, assessment rules and JSON format remain unchanged.

@@ -488,7 +488,7 @@ export default function App() {
               </li>
               <li>
                 <strong>Assess the evidence.</strong> Apply Present, Partial, or
-                Not Evidenced to each grouping and explain your rationale.
+                Not evidenced to each grouping and explain your rationale.
               </li>
               <li>
                 <strong>Review the conditions.</strong> Follow the visible rules

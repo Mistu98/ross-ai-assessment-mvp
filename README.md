@@ -32,7 +32,7 @@ Tests use system Chromium if present, otherwise Playwright's browser. Set `PLAYW
 
 ## What works
 
-- **Dashboard:** all active groupings are visible by name with their questions, factors, concept mappings, and direct edit/assess links. Activity counts and evidence completeness come from the browser workspace.
+- **Dashboard:** all active groupings are visible by name with their questions, factors, concept mappings, and direct edit/assess links. Activity cards show neutral evidence-coverage counts separately from qualitative rubric-condition counts. The comparison table links each judgement to its rationale and sources; no risk score or performance bars are shown.
 - **Activity profiles:** A1 bug fixing, A2 agent-supported development/build-and-test, A3 code review; create, search, edit, and delete additional profiles. Record scope, owner, tool, and supporting files.
 - **Assessment rubric:** editable factors within a variable set of explicitly provisional groupings, human-selected statuses, written rationale, source links, evidence links, and unresolved conditions. Partial requires a condition. Changed factors or evidence require reapplication without rewriting the earlier human status.
 - **Recommendation map:** one visible follow-up rule per active factor, category filters, linked literature concepts, recorded evidence, and unresolved conditions. Each rule explains its inputs and logic, including reapplication conditions.

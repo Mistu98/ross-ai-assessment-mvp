@@ -1,4 +1,8 @@
 import { useState } from "react";
+import {
+  evidenceStatusLabel,
+  rubricConditionLabel,
+} from "../lib/assessmentDisplay.js";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
@@ -195,7 +199,7 @@ export default function Rubric() {
                     <strong>{f.name}</strong>
                     <span>
                       {isCurrent(activity.assessments[f.id], f)
-                        ? activity.assessments[f.id].status
+                        ? evidenceStatusLabel(activity.assessments[f.id].status)
                         : activity.assessments[f.id]?.recorded
                           ? "Reapplication needed"
                           : "Not yet assessed"}
@@ -361,12 +365,12 @@ function AssessmentForm({ activity, group, factor, onSave }) {
             <dl className="rubric-definitions">
               {Object.entries(factor.rubric).map(([label, text]) => (
                 <div key={label}>
-                  <dt>{label}</dt>
+                  <dt>{rubricConditionLabel(label)}</dt>
                   <dd>{text}</dd>
                 </div>
               ))}
               <div>
-                <dt>Unresolved pending clarification</dt>
+                <dt>Unresolved</dt>
                 <dd>
                   Insufficient evidence to place the activity against this
                   criterion. Identify what must be clarified.
@@ -397,7 +401,7 @@ function AssessmentForm({ activity, group, factor, onSave }) {
                   {Object.entries(initial.factorSnapshot.rubric).map(
                     ([label, definition]) => (
                       <div key={label}>
-                        <dt>{label}</dt>
+                        <dt>{rubricConditionLabel(label)}</dt>
                         <dd>{definition}</dd>
                       </div>
                     ),
@@ -440,7 +444,7 @@ function AssessmentForm({ activity, group, factor, onSave }) {
                   checked={status === value}
                   onChange={(e) => setStatus(e.target.value)}
                 />
-                <span>{value}</span>
+                <span>{evidenceStatusLabel(value)}</span>
               </label>
             ))}
           </div>
@@ -461,7 +465,9 @@ function AssessmentForm({ activity, group, factor, onSave }) {
             >
               <option value="">Not yet applied</option>
               {RUBRIC_LEVELS.map((value) => (
-                <option key={value}>{value}</option>
+                <option key={value} value={value}>
+                  {rubricConditionLabel(value)}
+                </option>
               ))}
             </select>
           </label>
