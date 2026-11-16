@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import report from "../data/reportBaseline.json";
 import { allFactors, isCurrent } from "../lib/method.js";
+import { evidenceStatusLabel } from "../lib/assessmentDisplay.js";
 const relevant = {
   Validation: ["validation-adequacy"],
   Autonomy: ["operational-autonomy"],
@@ -75,7 +76,10 @@ export default function ReportRecommendations({ activity, method, category }) {
                       to={`/rubric?activity=${activity.id}&group=${f.groupId}&factor=${id}`}
                     >
                       {f.name} ·{" "}
-                      {record?.recorded ? record.status : "Not yet assessed"} →
+                      {record?.recorded
+                        ? evidenceStatusLabel(record.status)
+                        : "Not yet assessed"}{" "}
+                      →
                     </Link>
                   ) : (
                     <span key={id}>

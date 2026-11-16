@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef } from "react";
 import { Link } from "react-router-dom";
+import { evidenceStatusLabel } from "../lib/assessmentDisplay.js";
 import {
   X,
   ArrowUpRight,
@@ -32,7 +33,7 @@ export function StatusBadge({ status }) {
             : "neutral"
       }
     >
-      {status}
+      {evidenceStatusLabel(status)}
     </Badge>
   );
 }

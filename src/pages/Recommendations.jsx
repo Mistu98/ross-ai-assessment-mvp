@@ -1,4 +1,8 @@
 import ReportRecommendations from "../components/ReportRecommendations.jsx";
+import {
+  evidenceStatusLabel,
+  rubricConditionLabel,
+} from "../lib/assessmentDisplay.js";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
@@ -188,12 +192,19 @@ export default function Recommendations() {
                             : "Not yet assessed"
                         }
                       />
-                      <p>{rule.explanation}</p>
+                      <p>
+                        {rule.explanation.replace(
+                          "Not Evidenced",
+                          evidenceStatusLabel("Not Evidenced"),
+                        )}
+                      </p>
                       {rule.assessment.rubricLevel && (
                         <p>
                           Separate rubric condition:{" "}
-                          <strong>{rule.assessment.rubricLevel}</strong>.{" "}
-                          {rule.assessment.rubricRationale}
+                          <strong>
+                            {rubricConditionLabel(rule.assessment.rubricLevel)}
+                          </strong>
+                          . {rule.assessment.rubricRationale}
                         </p>
                       )}
                       {rule.assessment.sourceReference && (
