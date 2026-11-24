@@ -2,19 +2,28 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useWorkspace } from "../lib/workspace.jsx";
 import { prepareReportImport } from "../lib/reportImport.js";
+import report from "../data/reportBaseline.json" with { type: "json" };
 import { Modal, FormError } from "./ui.jsx";
 
 export default function ReportBaseline() {
   const { workspace, concepts, commit, exportData } = useWorkspace();
   const [pending, setPending] = useState(null),
     [error, setError] = useState("");
-  if (workspace.activities.some((a) => a.reportCase))
+  const cases = workspace.activities.filter((a) => a.reportCase);
+  const hasOlderReportJudgements = cases.some((a) =>
+    Object.values(a.assessments ?? {}).some((assessment) =>
+      assessment?.assessor === "Transcribed from report findings; no new assessor sign-off" &&
+      assessment?.factorSnapshot?.releaseVersion !== report.version,
+    ),
+  );
+  if (cases.length)
     return (
       <div className="report-source-strip">
-        <strong>Report case study · 13 November 2026</strong>
+        <strong>Curated report source · 22 November 2026</strong>
         <span>
-          Provisional method · report findings remain editable · original
-          artifacts are not bundled.
+          {hasOlderReportJudgements
+            ? "This browser has older saved report judgements. They are preserved; export your workspace and explicitly compare/reapply against the newer report. No automatic overwrite occurs."
+            : "Provisional method · report summaries remain editable · original artifacts are not bundled."}
         </span>
         <Link to="/method?tab=versions">Method & provenance →</Link>
       </div>
@@ -62,8 +71,8 @@ export default function ReportBaseline() {
             </p>
             <p>
               Active groupings: {pending.summary.before} →{" "}
-              {pending.summary.after}. Source: Report 13 November 2026, Chapters
-              2–4. No new human sign-off or raw screenshot upload is implied.
+              {pending.summary.after}. Source: Final PDF, 22 November 2026,
+              Chapters 2–4. No new human sign-off or raw screenshot upload is implied.
             </p>
             <div className="modal-actions">
               <button className="button button-secondary" onClick={exportData}>
