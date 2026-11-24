@@ -4,7 +4,7 @@ This is a documented manual process. The browser does not execute Excel, KNIME, 
 
 ## Current source state
 
-`data/concepts.json` uses an object with a `concepts` array and currently has no records. It is preserved unchanged. The owner will supply the reviewed concepts and grouping mapping later; all working labels and recommendation prompts remain provisional until then.
+`data/concepts.json` contains the 15 consolidated concepts and six explicit provisional mappings transcribed from the final report. Supporting literature in C04/C09 includes the two later author-confirmed Table 4 additions. The grouping criteria remain qualitative and must be re-evaluated when method evidence changes; concept counts are not risk severity scores.
 
 The retained `knime/ross-literature-analysis.knwf` archive includes CSV readers/writers, text preprocessing, bag-of-words/term weighting, and clustering nodes. The archive structure was inspected; KNIME was not run. No automated Excel-to-JSON export or reviewed six-group mapping is claimed.
 
