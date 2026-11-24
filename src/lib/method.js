@@ -231,7 +231,7 @@ export function reportWorkspace() {
     method,
     conceptSource: {
       raw: structuredClone(literature),
-      name: "Report 13 November 2026 · literature mapping",
+      name: "Final PDF 22 November 2026 · literature mapping",
       loadedAt: "",
     },
     activities: report.activities.map((source) =>

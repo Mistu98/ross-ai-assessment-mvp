@@ -56,11 +56,11 @@ All editor changes apply to **this browser workspace**. They do not update every
 
 ## Method status
 
-The report dated **13 November 2026** supplies 15 consolidated concepts and six **provisional** groupings. `data/concepts.json` now contains those definitions, representative citations and explicit mappings. The grouping count remains data-driven; C06A and C06B are separate concepts. These report findings do not constitute independent literature verification or final methodology approval.
+The final PDF dated **22 November 2026** supplies 15 consolidated concepts and six **provisional** groupings. `data/concepts.json` now contains those definitions, representative citations and explicit mappings. The grouping count remains data-driven; C06A and C06B are separate concepts. The author also confirmed subsequent Table 4 supporting-literature additions for C04/C09; these do not change the study count or analytical structure. The report findings do not constitute independent literature verification or comprehensive validation of the assessment method.
 
 Fresh browser workspaces load three report-derived profiles, written source summaries, 18 evidence judgements, and separate qualitative rubric conditions. Existing browser records are never overwritten automatically: **Preview report update** shows the method change, offers a backup, and adds distinct report case copies when existing activity IDs/codes are occupied. Prior method definitions are archived and earlier evidence/judgements retained.
 
-`0.2-draft` identifies the implementation format. `report-2026-11-13-provisional` identifies the report content release. Neither is a validated research release.
+`0.2-draft` identifies the implementation format. `report-2026-11-22-provisional` identifies the report content release. Neither is a validated research release.
 
 **Evidence status** is Present, Partial or Not Evidenced. **Qualitative rubric condition** is Lower / More Bounded, Intermediate, Higher / More Demanding, or Unresolved pending clarification. These are independent human judgements: A1 validation is Present and Intermediate while retaining the regression-gap follow-up. Unrecorded factors display **Not yet assessed**, separately from a human-recorded Not Evidenced judgement.
 
