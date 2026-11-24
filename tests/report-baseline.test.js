@@ -219,3 +219,41 @@ test("a required but unapplied qualitative rubric remains a follow-up even with 
     true,
   );
 });
+
+test("22 November source preserves the analytical structure and the final-report corrections", () => {
+  assert.equal(report.version, "report-2026-11-22-provisional");
+  assert.equal(literature.version, "report-2026-11-22-provisional");
+  assert.equal(report.activities.length, 3);
+  assert.equal(report.activities.reduce((n, a) => n + a.findings.length, 0), 18);
+  const a1 = report.activities.find((a) => a.code === "A1");
+  assert.notEqual(
+    a1.recommendations["Human oversight"],
+    a1.recommendations["Technical controls"],
+  );
+  assert.match(a1.recommendations["Human oversight"], /review and approval before merge/i);
+  assert.match(a1.findings.find((f) => f.factorId === "human-approval").rubricRationale,
+    /case-specific approval/i);
+  assert.equal(
+    a1.findings.find((f) => f.factorId === "validation-adequacy").rubricLevel,
+    "Intermediate",
+  );
+  const a2 = report.activities.find((a) => a.code === "A2");
+  assert.equal(a2.evidenceRefs.includes("E04"), false);
+  assert.match(a2.description, /pilot/i);
+  const a3 = report.activities.find((a) => a.code === "A3");
+  assert.match(a3.description, /ADDITIONAL AURA DEVELOPER FEEDBACK/);
+  assert.match(a3.description, /ADDITIONAL ROSS ENGINEERING TEAM FEEDBACK/);
+  assert.match(a3.description, /no noticeable improvement in overall MR closure time/i);
+  assert.match(a3.recommendations.Validation, /missed consequential issues/i);
+  assert.match(a3.recommendations["Human oversight"], /mandatory human review/i);
+  assert.equal(a3.findings.find((f) => f.factorId === "operational-autonomy").rubricLevel,
+    "Lower / More Bounded");
+  const c04 = literature.concepts.find((c) => c.id === "C04");
+  const c09 = literature.concepts.find((c) => c.id === "C09");
+  const c06b = literature.concepts.find((c) => c.id === "C06B");
+  assert.match(c04.source, /Bensaid et al\. \(2026\)/);
+  assert.match(c09.source, /Middleton et al\. \(2022\)/);
+  assert.match(c06b.source, /Peng et al\. \(2025\)/);
+  assert.equal(report.triggers.length, 7);
+  assert.equal(report.procedure.length, 6);
+});
