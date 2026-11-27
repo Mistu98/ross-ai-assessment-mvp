@@ -1,0 +1,68 @@
+name: Publish executive readout to GitHub Pages
+
+# Deploy only the approved static executive-readout site.
+# The React MVP, source documents, and repository data are NOT published by this workflow.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "public/executive-readout/**"
+      - ".github/workflows/pages-executive-readout.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages-executive-readout
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy executive readout only
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Prepare restricted Pages artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s public/executive-readout/index.html
+          mkdir -p _site/executive-readout
+          cp public/executive-readout/index.html _site/executive-readout/index.html
+          cat > _site/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta http-equiv="refresh" content="0; url=./executive-readout/">
+            <title>Ross Video — Executive Research Readout</title>
+          </head>
+          <body>
+            <p>Open the <a href="./executive-readout/">interactive executive readout</a>.</p>
+          </body>
+          </html>
+          EOF
+          touch _site/.nojekyll
+          find _site -type f -print
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@v4
