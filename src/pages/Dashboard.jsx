@@ -158,7 +158,7 @@ export default function Dashboard() {
                   <span className="eyebrow">
                     GROUPING {String(index + 1).padStart(2, "0")}
                   </span>
-                  <Badge tone="amber">Draft</Badge>
+                  <Badge tone="green">Final</Badge>
                 </div>
                 <h2>{group.name}</h2>
                 <p>{group.prompt}</p>
