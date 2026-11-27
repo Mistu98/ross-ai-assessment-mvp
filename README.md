@@ -4,6 +4,14 @@ AI-assisted software engineering risk assessment MVP for Ross Video, integrating
 
 A React + Vite + Tailwind browser proof of concept for the master's capstone **Risk-Based Assessment of AI-Assisted Software Engineering Activities**. The application supports a repeatable human assessment; it does not make autonomous AI judgements.
 
+## MVP project status - updated 27 November 2026
+
+**Status: Finalized for capstone demonstration and client handover.** The client has reviewed the information presented in the MVP and expressed satisfaction with it. The implementation's agreed demonstration scope is complete; the application documents a human-led assessment process for activities, evidence, qualitative rubric judgments, recommendations, and reassessment.
+
+**What this status does and does not mean:** This is completion of the MVP deliverable, **not** production deployment, organization-wide adoption, independent validation of the research method, or verification of AI-generated engineering outcomes. Starter research classifications and groupings remain provisional; browser-local records require explicit human review. No shared backend, live KNIME/Excel synchronization, MCP, or automated AI decision-making is included.
+
+The status date above records the **GitHub project update**, not the date of the underlying report evidence. Content provenance and technical identifiers are documented below. Additional evaluation and integration would constitute future work, not unfinished MVP requirements.
+
 ## Start locally
 
 Install Node.js 22 LTS or newer. In a terminal in this repository, run:
@@ -60,7 +68,7 @@ The final PDF dated **22 November 2026** supplies 15 consolidated concepts and s
 
 Fresh browser workspaces load three report-derived profiles, written source summaries, 18 evidence judgements, and separate qualitative rubric conditions. Existing browser records are never overwritten automatically: **Preview report update** shows the method change, offers a backup, and adds distinct report case copies when existing activity IDs/codes are occupied. Prior method definitions are archived and earlier evidence/judgements retained.
 
-`0.2-draft` identifies the implementation format. `report-2026-11-22-provisional` identifies the report content release. Neither is a validated research release.
+`0.2-draft` is a retained internal method/storage format identifier for compatibility, not the MVP delivery status. `report-2026-11-22-provisional` identifies the report-derived content snapshot used by the implementation, not the date of this GitHub status update. Neither identifier represents independently validated research.
 
 **Evidence status** is Present, Partial or Not Evidenced. **Qualitative rubric condition** is Lower / More Bounded, Intermediate, Higher / More Demanding, or Unresolved pending clarification. These are independent human judgements: A1 validation is Present and Intermediate while retaining the regression-gap follow-up. Unrecorded factors display **Not yet assessed**, separately from a human-recorded Not Evidenced judgement.
 
