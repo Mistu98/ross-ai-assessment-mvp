@@ -19,7 +19,7 @@ export default function ReportBaseline() {
   if (cases.length)
     return (
       <div className="report-source-strip">
-        <strong>Curated report source · 22 November 2026</strong>
+        <strong>Report-derived research baseline · provisional assessment</strong>
         <span>
           {hasOlderReportJudgements
             ? "This browser has older saved report judgements. They are preserved; export your workspace and explicitly compare/reapply against the newer report. No automatic overwrite occurs."
