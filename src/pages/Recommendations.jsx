@@ -60,7 +60,7 @@ export default function Recommendations() {
         <GitBranch size={20} />
         <p>
           <strong>Rule-based decision support.</strong> Each prompt uses the
-          evidence status recorded by a human. These provisional rules generate
+          evidence status recorded by a human. These finalized MVP rules generate
           follow-up actions, not risk scores or AI conclusions.
         </p>
       </div>
@@ -261,7 +261,7 @@ export default function Recommendations() {
                   </details>
                   <div className="recommendation-footer">
                     <span>
-                      Provisional rule · method revision{" "}
+                      Final MVP rule · method revision{" "}
                       {workspace.method.revision}
                     </span>
                     <Link
