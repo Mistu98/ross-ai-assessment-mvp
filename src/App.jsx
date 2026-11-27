@@ -516,9 +516,9 @@ export default function App() {
               </p>
             </div>
             <p className="small muted">
-              The research groupings and recommendation rules remain provisional
-              and require human judgment. MVP delivery completion does not
-              establish organization-wide deployment or independent research validation.
+              The MVP method is finalized for capstone demonstration. Individual
+              activity assessments still require human review. Completion does
+              not establish organization-wide deployment or independent research validation.
             </p>
             <button
               className="button button-primary"

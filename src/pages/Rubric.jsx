@@ -69,8 +69,7 @@ export default function Rubric() {
       <div className="warning-banner">
         <Info size={19} />
         <span>
-          <strong>Provisional method.</strong> These groupings and their factors
-          are editable working definitions.{" "}
+          <strong>Finalized MVP method.</strong> Groupings and factors remain editable; each activity assessment still requires human judgment.{" "}
           <Link to="/method?tab=groupings">
             Manage groupings & factors <ArrowRight size={13} />
           </Link>
@@ -314,7 +313,7 @@ function AssessmentForm({ activity, group, factor, onSave }) {
           </div>
           <h2>{factor.name}</h2>
         </div>
-        <Badge tone="amber">Provisional</Badge>
+        <Badge tone="green">Final</Badge>
       </div>
       <form
         className="panel-body form-stack"

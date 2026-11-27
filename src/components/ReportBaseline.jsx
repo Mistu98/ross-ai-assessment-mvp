@@ -19,11 +19,11 @@ export default function ReportBaseline() {
   if (cases.length)
     return (
       <div className="report-source-strip">
-        <strong>Report-derived research baseline · provisional assessment</strong>
+        <strong>Final MVP method · report-derived evidence</strong>
         <span>
           {hasOlderReportJudgements
             ? "This browser has older saved report judgements. They are preserved; export your workspace and explicitly compare/reapply against the newer report. No automatic overwrite occurs."
-            : "Provisional method · report summaries remain editable · original artifacts are not bundled."}
+            : "Final MVP method · source summaries remain editable · original artifacts are not bundled."}
         </span>
         <Link to="/method?tab=versions">Method & provenance →</Link>
       </div>
@@ -58,7 +58,7 @@ export default function ReportBaseline() {
         <Modal title="Review report update" onClose={() => setPending(null)}>
           <div className="modal-body form-stack">
             <p>
-              Load the report’s six provisional groupings, 15 mapped concepts,
+              Load the six finalized MVP groupings, 15 mapped concepts,
               three profiles and 18 documented evidence judgements, with
               separate qualitative rubric conditions.
             </p>
