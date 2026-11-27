@@ -19,7 +19,7 @@ import {
   Archive,
 } from "lucide-react";
 import { useWorkspace } from "../lib/workspace.jsx";
-import { METHOD, allFactors, activeGroups } from "../lib/method.js";
+import { allFactors, activeGroups } from "../lib/method.js";
 import { parseConcepts } from "../lib/concepts.js";
 import {
   Badge,
