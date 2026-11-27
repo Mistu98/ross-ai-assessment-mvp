@@ -153,7 +153,7 @@ export default function Method() {
         </span>
         <div>
           <div className="eyebrow">
-            EDITABLE WORKING METHOD · REVISION {workspace.method.revision}
+            FINALIZED MVP METHOD · REVISION {workspace.method.revision}
           </div>
           <h2>
             {activeGroups(workspace.method).length} active groupings.{" "}
@@ -162,13 +162,11 @@ export default function Method() {
             </span>
           </h2>
           <p>
-            {active.length} literature concepts supplied ·{" "}
-            {workspace.method.release?.version || METHOD.version} · saved in
-            this browser
+            {active.length} literature concepts supplied · Final MVP method · updated 27 November 2026 · saved in this browser
           </p>
         </div>
-        <Badge tone="amber" dot>
-          Provisional
+        <Badge tone="green" dot>
+          Final
         </Badge>
       </div>
       <div className="page-tabs" role="tablist" aria-label="Method information">
@@ -217,7 +215,7 @@ export default function Method() {
                 <h2>Literature-derived concept library</h2>
                 <p>
                   The report consolidates 40 reviewed studies into 15 concepts
-                  and six provisional groupings. Representative citations are
+                  and six finalized MVP groupings. Representative citations are
                   supplied by the report; local definitions and mappings remain
                   editable.
                 </p>
@@ -375,7 +373,7 @@ export default function Method() {
                   <p>
                     {concepts.items.length
                       ? "Adjust your search, grouping, or archived filter."
-                      : "The draft groupings are visible and editable. Add the actual literature concepts here when ready; no concepts or citations are invented."}
+                      : "The method groupings are editable. Add sourced literature concepts when available; no concepts or citations are invented."}
                   </p>
                   <button
                     className="button button-primary"
@@ -405,15 +403,14 @@ export default function Method() {
               <div>
                 <h2>Method version record</h2>
                 <p>
-                  Actual local edits are recorded below. Groupings and rules
-                  remain provisional.
+                  The MVP method is finalized for demonstration. Later edits and activity-level judgments still require human review.
                 </p>
               </div>
-              <Badge tone="amber">Implementation draft</Badge>
+              <Badge tone="green">Finalized MVP</Badge>
             </div>
             <MethodTransfer />
             <p className="source-citation">
-              Report baseline: 13 November 2026, Sections 3–4. The full report
+              Research provenance: report Chapters 3–4. The full report
               and original engineering artifacts are not published with this
               app. Source findings are transcribed with their limitations; no
               new approval is asserted. C06A and C06B remain distinct concept
@@ -425,8 +422,7 @@ export default function Method() {
               </span>
               <div>
                 <h3>
-                  {workspace.method.release?.version ||
-                    "Provisional starting method"}{" "}
+                  {"Finalized MVP method"}{" "}
                   · local revision {workspace.method.revision}
                 </h3>
                 <p>
