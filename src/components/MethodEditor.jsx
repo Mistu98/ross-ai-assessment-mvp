@@ -93,7 +93,7 @@ export default function MethodEditor() {
                   <div>
                     <span className="eyebrow">
                       GROUPING {String(index + 1).padStart(2, "0")} ·{" "}
-                      {group.archived ? "ARCHIVED" : "PROVISIONAL"}
+                      {group.archived ? "ARCHIVED" : "FINAL"}
                     </span>
                     <h3>{group.name}</h3>
                   </div>
