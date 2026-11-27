@@ -337,7 +337,7 @@ export default function App() {
           </button>
           <div className="sidebar-footer">
             <span>ROSS VIDEO × CAPSTONE</span>
-            <small>Proof of concept · v0.2</small>
+            <small>MVP finalized · 27 Nov 2026</small>
           </div>
         </div>
       </aside>
@@ -377,6 +377,13 @@ export default function App() {
           </div>
         </header>
         <main id="main-content" tabIndex={-1}>
+          <div className="mvp-completion-banner" aria-label="MVP delivery status">
+            <div>
+              <strong>MVP finalized for capstone demonstration and handover</strong>
+              <span>Client-reviewed information · Human-led assessment; not production validation</span>
+            </div>
+            <time dateTime="2026-11-27">Updated 27 November 2026</time>
+          </div>
           {storageError && (
             <div className="warning-banner" role="alert">
               <AlertCircle size={19} />
@@ -426,7 +433,7 @@ export default function App() {
               Activities
             </span>
             <span>
-              Research proof of concept <span className="footer-dot">·</span>{" "}
+              MVP finalized 27 November 2026 <span className="footer-dot">·</span>{" "}
               Human assessment required
             </span>
           </footer>
@@ -476,7 +483,7 @@ export default function App() {
           onClose={() => setHelpOpen(false)}
         >
           <div className="modal-body guide-content">
-            <Badge tone="green">Browser-based proof of concept</Badge>
+            <Badge tone="green">Finalized capstone MVP demonstration</Badge>
             <p>
               Use this workspace to document AI-assisted engineering and support
               a transparent human assessment.
@@ -509,9 +516,9 @@ export default function App() {
               </p>
             </div>
             <p className="small muted">
-              The working groupings and recommendation rules are provisional.
-              The repository source is connected, but its concepts array is
-              empty. Literature records and the approved mapping are pending.
+              The research groupings and recommendation rules remain provisional
+              and require human judgment. MVP delivery completion does not
+              establish organization-wide deployment or independent research validation.
             </p>
             <button
               className="button button-primary"
