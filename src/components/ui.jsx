@@ -37,6 +37,19 @@ export function StatusBadge({ status }) {
     </Badge>
   );
 }
+// A finalized capstone profile is different from a signed-off human assessment.
+// Preserve the stored reviewStatus and rubric judgements for all activities.
+export function ProfileStatusBadge({ activity }) {
+  if (!activity.reportCase) return <StatusBadge status={activity.reviewStatus} />;
+  return (
+    <span
+      title="Finalized MVP profile; formal human review of activity assessments is tracked separately."
+      aria-label="Finalized MVP profile; assessment sign-off is separate"
+    >
+      <Badge tone="green" dot>Final</Badge>
+    </span>
+  );
+}
 export function Icon({ name, ...props }) {
   const Component =
     {

@@ -32,6 +32,10 @@ const expectedCells = [
 test("activity cards show separate neutral evidence and qualitative summaries on both screens", async ({
   page,
 }) => {
+  await page.addInitScript((workspace) => {
+    if (!localStorage.getItem("ross-assessment-workspace-v1"))
+      localStorage.setItem("ross-assessment-workspace-v1", JSON.stringify(workspace));
+  }, reportWorkspace());
   await page.goto("/");
   const cards = page.locator(".dashboard-activity-card");
   await expect(cards).toHaveCount(3);
@@ -42,7 +46,7 @@ test("activity cards show separate neutral evidence and qualitative summaries on
     await expect(cards.nth(i).locator(".activity-rubric-summary")).toHaveText(
       `Qualitative rubric condition: ${summaries[i][1]}`,
     );
-    await expect(cards.nth(i)).toContainText("In review");
+    await expect(cards.nth(i).locator(".badge")).toHaveText("Final");
   }
   await expect(
     page.locator('.coverage-bar, .donut-container, [role="progressbar"]'),
@@ -60,6 +64,7 @@ test("activity cards show separate neutral evidence and qualitative summaries on
   await page.goto("/#/activities?activity=a1");
   const selectors = page.locator(".profile-selector");
   for (let i = 0; i < 3; i++) {
+    await expect(selectors.nth(i).locator(".badge")).toHaveText("Final");
     await expect(
       selectors.nth(i).locator(".activity-evidence-summary"),
     ).toHaveText(`Evidence coverage: ${summaries[i][0]}`);
@@ -67,6 +72,10 @@ test("activity cards show separate neutral evidence and qualitative summaries on
       selectors.nth(i).locator(".activity-rubric-summary"),
     ).toHaveText(`Qualitative rubric condition: ${summaries[i][1]}`);
   }
+  await expect(page.locator(".profile-assessment-status")).toContainText("Profile");
+  await expect(page.locator(".profile-assessment-status .badge")).toHaveText("Final");
+  const storedWorkspace = await page.evaluate(() => JSON.parse(localStorage.getItem("ross-assessment-workspace-v1")));
+  expect(storedWorkspace.activities.map((a) => a.reviewStatus)).toEqual(["In review", "In review", "In review"]);
   await expect(
     selectors.locator('.coverage-bar, [role="progressbar"]'),
   ).toHaveCount(0);

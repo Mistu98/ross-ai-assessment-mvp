@@ -19,7 +19,7 @@ import {
   PageHeading,
   AssessmentJourney,
   SectionHeading,
-  StatusBadge,
+  ProfileStatusBadge,
   EmptyState,
   FormError,
   Modal,
@@ -80,7 +80,7 @@ export default function Activities() {
             >
               <div>
                 <span className={`activity-code code-${i % 3}`}>{a.code}</span>
-                <StatusBadge status={a.reviewStatus} />
+                <ProfileStatusBadge activity={a} />
               </div>
               <h3>{a.title}</h3>
               <p>{a.description || "No description added yet."}</p>
@@ -176,8 +176,9 @@ function Profile({ activity, onDeleted }) {
           <strong>{activity.reportCase} · Report-derived profile</strong>
           <p>
             Section 4.2 documents the activity context and evidence limitations.
-            Supporting records below are editable report summaries; original
-            screenshots are not attached. Add files to the relevant record and
+            The report-derived profile is finalized for the capstone MVP; its human
+            assessment-review checkpoint remains separate. Supporting records
+            below are editable report summaries; original screenshots are not attached. Add files to the relevant record and
             link them explicitly in the rubric. Uploads do not assign evidence
             statuses.
           </p>
@@ -208,8 +209,8 @@ function Profile({ activity, onDeleted }) {
           subtitle="Capture a specific, assessable unit of work."
         >
           <span className="profile-assessment-status">
-            <span>Assessment</span>
-            <StatusBadge status={activity.reviewStatus} />
+            <span>{activity.reportCase ? "Profile" : "Assessment"}</span>
+            <ProfileStatusBadge activity={activity} />
           </span>
         </SectionHeading>
         <form

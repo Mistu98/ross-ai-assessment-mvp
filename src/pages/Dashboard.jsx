@@ -26,7 +26,7 @@ import {
   Badge,
   PageHeading,
   SectionHeading,
-  StatusBadge,
+  ProfileStatusBadge,
   Icon,
   EmptyState,
 } from "../components/ui.jsx";
@@ -231,7 +231,7 @@ export default function Dashboard() {
         <section className="card activity-section">
           <SectionHeading
             title="Activity profiles"
-            subtitle="Descriptions, evidence, and human assessment records."
+            subtitle="Finalized report-derived profiles, with evidence and human review recorded separately."
           >
             <Link to="/activities" className="text-link">
               View all <ArrowRight size={15} />
@@ -257,7 +257,7 @@ export default function Dashboard() {
                       <small>{a.owner || "Owner not assigned"}</small>
                     </span>
                   </Link>
-                  <StatusBadge status={a.reviewStatus} />
+                  <ProfileStatusBadge activity={a} />
                 </div>
                 <ActivityAssessmentSummary activity={a} method={method} />
                 <Link className="text-link" to={`/rubric?activity=${a.id}`}>
