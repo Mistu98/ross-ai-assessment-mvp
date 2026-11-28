@@ -32,6 +32,10 @@ const expectedCells = [
 test("activity cards show separate neutral evidence and qualitative summaries on both screens", async ({
   page,
 }) => {
+  await page.addInitScript((workspace) => {
+    if (!localStorage.getItem("ross-assessment-workspace-v1"))
+      localStorage.setItem("ross-assessment-workspace-v1", JSON.stringify(workspace));
+  }, reportWorkspace());
   await page.goto("/");
   const cards = page.locator(".dashboard-activity-card");
   await expect(cards).toHaveCount(3);
